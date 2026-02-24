@@ -1,0 +1,79 @@
+# ============================================================
+# SENSITIVE FILES - Never commit these to GitHub!
+# ============================================================
+
+# Firebase credentials / config (contains API keys)
+js/firebase-config.js
+
+# Firebase service account keys (only present if you use Admin SDK)
+*-service-account*.json
+service-account*.json
+serviceAccount*.json
+*-adminsdk-*.json
+firebase-adminsdk*.json
+
+# Environment variable files
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+
+# ============================================================
+# FIREBASE TOOLING CACHE
+# ============================================================
+
+# Firebase CLI local cache & debug logs
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+database-debug.log
+
+# ============================================================
+# NODE / PACKAGE MANAGER
+# ============================================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ============================================================
+# OS & EDITOR JUNK FILES
+# ============================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+
+# ============================================================
+# MISC
+# ============================================================
+
+# Python byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp

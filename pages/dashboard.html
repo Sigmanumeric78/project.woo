@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | ECA-Connect</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Filter-specific styles */
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: var(--surface-200);
+            border-radius: var(--radius-full);
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-500);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-500);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .interest-tag {
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-sm);
+            cursor: pointer;
+            border: 1px solid var(--surface-200);
+            background: var(--surface-50);
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .interest-tag:hover {
+            border-color: var(--primary-400);
+        }
+
+        .interest-tag.active {
+            background: var(--primary-500);
+            color: white;
+            border-color: var(--primary-500);
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--primary-50);
+            color: var(--primary-700);
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+        }
+
+        .filter-chip button {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        .filter-section-divider {
+            height: 1px;
+            background: var(--surface-200);
+            margin: 24px 0;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: var(--text-sm);
+            cursor: pointer;
+            padding: 10px 12px;
+            background: var(--surface-100);
+            border-radius: var(--radius-sm);
+            transition: background 0.2s;
+        }
+
+        .checkbox-option:hover {
+            background: var(--surface-150);
+        }
+
+        .checkbox-option input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Custom Scrollbar for Sidebar */
+        #filter-sidebar::-webkit-scrollbar {
+            width: 4px;
+            /* Thin */
+        }
+
+        #filter-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #filter-sidebar::-webkit-scrollbar-thumb {
+            background-color: var(--surface-300);
+            border-radius: 4px;
+        }
+
+        #filter-sidebar::-webkit-scrollbar-thumb:hover {
+            background-color: var(--text-muted);
+        }
+
+        /* Firefox */
+        #filter-sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: var(--surface-300) transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Nav -->
+    <nav class="dashboard-nav"
+        style="background: var(--surface-50); padding: var(--space-16); border-bottom: 1px solid var(--surface-200); position: sticky; top: 0; z-index: 100;">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; gap: var(--space-24); align-items: center;">
+            <div
+                style="font-family: var(--font-headings); font-weight: 700; color: var(--base-white); white-space: nowrap;">
+                ECA-Connect</div>
+
+            <div class="user-menu" style="display: flex; align-items: center; gap: var(--space-16); margin-left: auto;">
+                <a href="profile.html" style="text-decoration: none;">
+                    <div class="avatar avatar-s">JD</div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard with Filters -->
+    <main style="max-width: 1400px; margin: 0 auto; padding: var(--space-24);">
+
+        <!-- Welcome Header -->
+        <header style="margin-bottom: var(--space-32);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h2 style="margin-bottom: var(--space-8);">Discover Groups</h2>
+                    <p class="text-muted">Find your perfect community match</p>
+                </div>
+                <div id="time-filter-widget"
+                    style="display: flex; align-items: center; gap: 8px; background: var(--surface-200); padding: 6px 16px; border-radius: 20px; border: 1px solid var(--surface-300);">
+                    <span style="font-size: 14px; color: var(--text-muted);">📅 Availability: <span id="time-display"
+                            style="color: var(--base-white); font-weight: 500;">Loading...</span></span>
+                    <button id="change-time-btn"
+                        style="background: none; border: none; color: var(--primary-500); cursor: pointer; font-weight: 600; font-size: 13px; padding: 0 0 0 8px; text-decoration: underline;">Change</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Layout: Filters + Results -->
+        <div style="display: grid; grid-template-columns: 320px 1fr; gap: var(--space-32);">
+
+            <!-- Filter Sidebar -->
+            <aside id="filter-sidebar"
+                style="position: sticky; top: 80px; height: fit-content; max-height: calc(100vh - 100px); overflow-y: auto; padding-right: 8px;">
+                <div style="padding: 0;">
+                    <!-- Header with Reset -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h3 class="sidebar-title" style="margin: 0;">Filters</h3>
+                        <button id="reset-filters-btn" class="btn btn-secondary btn-sm"
+                            style="font-size: 13px; padding: 6px 12px; font-weight: 600;">
+                            Reset filters
+                        </button>
+                    </div>
+
+                    <!-- Search -->
+                    <div style="margin-bottom: 28px;">
+                        <label
+                            style="font-size: 14px; font-weight: 600; margin-bottom: 12px; display: block; color: var(--base-white);">
+                            Search
+                        </label>
+                        <input type="text" id="filter-search" class="input" placeholder="Search groups..."
+                            style="width: 100%; padding: 10px 14px;">
+                    </div>
+
+                    <div class="filter-section-divider"></div>
+
+                    <!-- Radius Slider -->
+                    <div style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <label style="font-size: 14px; font-weight: 600; color: var(--base-white);">Radius</label>
+                            <span id="radius-display"
+                                style="font-size: 14px; color: var(--primary-500); font-weight: 600;">10 km</span>
+                        </div>
+                        <input type="range" id="filter-radius" min="1" max="50" value="10"
+                            style="width: 100%; cursor: pointer; accent-color: var(--primary-500);">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                            <span>1km</span>
+                            <span>50km</span>
+                        </div>
+                    </div>
+
+                    <div class="filter-section-divider"></div>
+
+                    <!-- Interest Tags -->
+                    <div style="margin-bottom: 28px;">
+                        <label
+                            style="font-size: 14px; font-weight: 600; margin-bottom: 14px; display: block; color: var(--base-white);">
+                            Interests
+                        </label>
+                        <div id="interest-tags" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            <!-- Tags will be populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="filter-section-divider"></div>
+
+                    <!-- Time Availability -->
+                    <!-- Time Availability REMOVED (Moved to Header) -->
+
+                    <!-- Skill Level -->
+                    <div style="margin-bottom: 28px;">
+                        <label
+                            style="font-size: 14px; font-weight: 600; margin-bottom: 12px; display: block; color: var(--base-white);">
+                            Skill Level
+                        </label>
+                        <select id="skill-filter" class="input"
+                            style="width: 100%; margin-bottom: 14px; padding: 10px 14px;">
+                            <option value="">Any skill level</option>
+                            <option value="beginner">Beginner friendly</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="strict-skill">
+                            <span>Strict skill matching</span>
+                        </label>
+                    </div>
+
+                    <div class="filter-section-divider"></div>
+
+                    <!-- Privacy -->
+                    <div style="margin-bottom: 28px;">
+                        <label
+                            style="font-size: 14px; font-weight: 600; margin-bottom: 14px; display: block; color: var(--base-white);">
+                            Privacy
+                        </label>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label class="checkbox-option">
+                                <input type="checkbox" class="privacy-filter" value="open" checked>
+                                <span>Open</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" class="privacy-filter" value="closed" checked>
+                                <span>Closed (Approval required)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-section-divider"></div>
+
+                    <!-- Language -->
+                    <div style="margin-bottom: 32px;">
+                        <label
+                            style="font-size: 14px; font-weight: 600; margin-bottom: 14px; display: block; color: var(--base-white);">
+                            Language
+                        </label>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label class="checkbox-option">
+                                <input type="checkbox" class="language-filter" value="English" checked>
+                                <span>English</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" class="language-filter" value="Hindi" checked>
+                                <span>Hindi</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Apply Button REMOVED (Live Filtering) -->
+                </div>
+
+                <!-- Active Filters Chips -->
+                <div id="active-filters" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px;">
+                    <!-- Filter chips will be added here -->
+                </div>
+            </aside>
+
+            <!-- Results Section -->
+            <div>
+                <!-- Results Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <span class="text-muted" style="font-size: 14px;">
+                            <span id="total-results-count" style="font-weight: 600; color: var(--base-white);">0</span>
+                            groups found
+                        </span>
+                    </div>
+                    <select id="sort-select" class="input" style="width: auto; padding: 8px 14px; font-size: 14px;">
+                        <option value="best-match">Best Match</option>
+                        <option value="nearest">Nearest</option>
+                        <option value="most-active">Most Active</option>
+                    </select>
+                </div>
+
+                <!-- In-Radius Groups -->
+                <section id="in-radius-section">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+                        <h3 id="results-header"
+                            style="font-size: 20px; color: var(--base-white); font-weight: 600; margin: 0;">Groups
+                            within 10 km</h3>
+                        <div style="font-size: 14px; color: var(--text-muted);"><span id="in-radius-count"
+                                style="color: var(--primary-500); font-weight: 700;">0</span> results</div>
+                    </div>
+                    <div id="in-radius-groups" class="groups-grid"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+                        <!-- Cards will be populated here -->
+                    </div>
+                </section>
+
+                <!-- Out-of-Radius Groups -->
+                <section id="out-radius-section" style="margin-top: 48px; display: none;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <h3 id="out-radius-header"
+                                style="font-size: 20px; color: var(--base-white); font-weight: 600; margin: 0;">Other
+                                groups (outside 10 km)</h3>
+                            <div style="font-size: 14px; color: var(--text-muted);"><span id="out-radius-count"
+                                    style="color: var(--text-muted); font-weight: 700;">0</span> more groups</div>
+                        </div>
+                        <button id="toggle-out-radius" class="btn btn-secondary btn-sm">
+                            Show more
+                        </button>
+                    </div>
+                    <p class="text-muted" style="font-size: 14px; margin-bottom: 20px;">
+                        Outside your radius but might still fit
+                    </p>
+                    <div id="out-radius-groups" class="groups-grid"
+                        style="display: none; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+                        <!-- Cards will be populated here -->
+                    </div>
+                </section>
+
+                <!-- Empty State -->
+                <div id="no-results" style="display: none; text-align: center; padding: 64px 24px;">
+                    <div style="font-size: 56px; margin-bottom: 20px;">🔍</div>
+                    <h3 style="margin-bottom: 12px; font-size: 22px;">No groups found</h3>
+                    <p class="text-muted" style="margin-bottom: 28px; font-size: 15px;">
+                        Try adjusting your filters or expanding your radius
+                    </p>
+                    <div id="suggestions" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+                        <!-- Suggestions will be added here -->
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading-state" style="text-align: center; padding: 64px;">
+                    <div style="font-size: 40px; margin-bottom: 16px;">⏳</div>
+                    <p class="text-muted" style="font-size: 15px;">Loading groups...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create FAB -->
+    <a href="create-group.html" class="btn btn-primary"
+        style="position: fixed; bottom: 32px; right: 32px; box-shadow: var(--shadow-lg); border-radius: var(--radius-full); width: 56px; height: 56px; padding: 0; font-size: 24px; z-index: 90; display: flex; align-items: center; justify-content: center; text-decoration: none;">+</a>
+
+    <!-- Scripts -->
+    <script type="module" src="../js/app.js?v=10"></script>
+    <!-- Time Selection Modal -->
+    <div id="time-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+        <div
+            style="background: var(--surface-100); padding: 24px; border-radius: 12px; width: 320px; border: 1px solid var(--surface-200); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            <h3 style="margin-bottom: 16px; font-size: 18px; color: var(--base-white);">Set Availability Time</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Check groups available at a
+                specific time.</p>
+
+            <div style="margin-bottom: 16px;">
+                <label
+                    style="display: block; font-size: 13px; margin-bottom: 6px; color: var(--text-muted);">Day</label>
+                <select id="modal-day" class="input" style="width: 100%;">
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                <div style="flex: 1;">
+                    <label
+                        style="display: block; font-size: 13px; margin-bottom: 6px; color: var(--text-muted);">From</label>
+                    <input type="time" id="modal-start" class="input" style="width: 100%;" value="09:00">
+                </div>
+                <div style="flex: 1;">
+                    <label
+                        style="display: block; font-size: 13px; margin-bottom: 6px; color: var(--text-muted);">To</label>
+                    <input type="time" id="modal-end" class="input" style="width: 100%;" value="12:00">
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button id="modal-cancel" class="btn btn-secondary" style="padding: 8px 16px;">Cancel</button>
+                <button id="modal-apply" class="btn btn-primary" style="padding: 8px 16px;">Apply</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

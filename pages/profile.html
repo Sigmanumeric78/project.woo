@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | ECA-Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        /* Profile Specific Styles */
+        body {
+            background-color: var(--base-black);
+            color: var(--base-white);
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* --- Left Column: Summary & Actions --- */
+        .profile-sidebar {
+            background: var(--surface-100);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--surface-200);
+            position: sticky;
+            top: 100px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-500);
+        }
+
+        .verification-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: var(--primary-500);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--surface-100);
+            font-size: 14px;
+        }
+
+        .profile-name {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--base-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .profile-role-badge {
+            font-size: 11px;
+            background: var(--surface-200);
+            color: var(--primary-500);
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid var(--surface-300);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+        .profile-bio {
+            color: var(--text-description);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .info-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface-50);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border: 1px solid var(--surface-200);
+            margin-bottom: 8px;
+        }
+
+        /* --- Quick Stats --- */
+        .profile-stat-row {
+            display: flex;
+            justify-content: space-around;
+            padding: 16px 0;
+            border-top: 1px solid var(--surface-200);
+            border-bottom: 1px solid var(--surface-200);
+            margin: 24px 0;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--base-white);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-description);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Social Links --- */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .social-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--surface-50);
+            border: 1px solid var(--surface-200);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            border-color: var(--primary-500);
+            color: var(--primary-500);
+            background: var(--surface-200);
+        }
+
+        /* --- Right Column: Content --- */
+        .profile-content {
+            background: var(--surface-100);
+            border-radius: 16px;
+            border: 1px solid var(--surface-200);
+            overflow: hidden;
+            min-height: 500px;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Tabs */
+        .profile-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--surface-200);
+            background: var(--surface-50);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .profile-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .profile-tab {
+            padding: 16px 24px;
+            font-weight: 600;
+            color: var(--text-description);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .profile-tab:hover {
+            color: var(--primary-500);
+            background: var(--surface-200);
+        }
+
+        .profile-tab.active {
+            color: var(--primary-500);
+            border-bottom-color: var(--primary-500);
+            background: var(--surface-100);
+        }
+
+        .tab-content {
+            padding: 32px;
+            display: none;
+            color: var(--text-description);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--base-white);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        /* --- Interest Tags with Levels --- */
+        .interest-tag-detailed {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--surface-200);
+            border: 1px solid var(--surface-300);
+            border-radius: 20px;
+            color: var(--base-white);
+            font-size: 14px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .skill-level {
+            font-size: 11px;
+            color: var(--primary-500);
+            text-transform: uppercase;
+            font-weight: 700;
+            padding-left: 8px;
+            border-left: 1px solid var(--surface-300);
+        }
+
+        /* Mobile Layout */
+        @media (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding: 16px;
+            }
+
+            .profile-sidebar {
+                position: relative;
+                top: 0;
+            }
+
+            .profile-tabs {
+                position: sticky;
+                top: 73px;
+                z-index: 10;
+                background: var(--surface-50);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                margin: 0 -16px;
+                padding: 0 16px;
+            }
+
+            .tab-content {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar"
+        style="position: sticky; top: 0; z-index: 100; background: var(--surface-50); border-bottom: 1px solid var(--surface-200); padding: 0 24px;">
+        <div class="nav-container"
+            style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 72px;">
+            <div class="logo"
+                style="font-family: 'Clash Display', sans-serif; font-weight: 700; font-size: 24px; color: var(--base-white); display: flex; align-items: center; gap: 8px;">
+                ECA-Connect
+            </div>
+
+            <div class="nav-links" style="display: flex; gap: 32px;">
+                <a href="dashboard.html" class="nav-link"
+                    style="text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 16px; transition: color 0.2s;">Discover</a>
+                <a href="profile.html" class="nav-link active"
+                    style="text-decoration: none; color: var(--primary-500); font-weight: 600; font-size: 16px;">Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <!-- Left Column: Summary -->
+        <aside class="profile-sidebar">
+            <div class="avatar-container">
+                <img src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff&size=120" alt="Profile"
+                    class="profile-avatar-large" id="profile-avatar"
+                    onerror="this.src='https://via.placeholder.com/120/0D8ABC/ffffff?text=U'">
+                <div class="verification-badge" id="verification-badge" style="display: none;">✓</div>
+            </div>
+
+            <h1 class="profile-name">
+                <span id="profile-name">User Name</span>
+                <span class="profile-role-badge" id="profile-role">User</span>
+            </h1>
+
+            <p class="profile-bio" id="profile-bio">No bio yet.</p>
+
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 24px;">
+                <div class="info-pill">
+                    <span>📍</span> <span id="profile-location">City, State</span>
+                </div>
+                <div class="info-pill">
+                    <span>🎯</span> <span id="profile-radius">Radius: 10 km</span>
+                </div>
+                <div class="info-pill">
+                    <span>🕒</span> <span id="profile-availability-pill">Weekends</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                <button id="btn-edit-profile" class="btn btn-secondary"
+                    style="width: 100%; border: 1px solid var(--primary-500); color: var(--primary-500); background: transparent;">Edit
+                    Profile</button>
+                <button id="btn-manage-avail" class="btn btn-secondary"
+                    style="width: 100%; border: 1px solid var(--surface-300); color: var(--text-muted); background: transparent;">Manage
+                    Availability</button>
+                <button id="btn-logout" class="btn btn-secondary"
+                    style="width: 100%; border: 1px solid var(--surface-300); color: var(--base-white); background: var(--surface-200); margin-top: 12px;">
+                    Log Out 🚪
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="profile-stats"
+                style="display: flex; justify-content: space-around; padding: 24px 0; border-top: 1px solid var(--surface-300); border-bottom: 1px solid var(--surface-300);">
+                <div class="stat-item" style="text-align: center;">
+                    <div id="profile-groups-joined" class="stat-value"
+                        style="font-size: 24px; font-weight: 700; color: var(--primary-500);">0</div>
+                    <div class="stat-label" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Joined
+                    </div>
+                </div>
+                <div class="stat-item" style="text-align: center;">
+                    <div id="profile-groups-created" class="stat-value"
+                        style="font-size: 24px; font-weight: 700; color: var(--primary-500);">0</div>
+                    <div class="stat-label" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Created
+                    </div>
+                </div>
+                <div class="stat-item" style="text-align: center;">
+                    <div id="profile-upcoming-activities" class="stat-value"
+                        style="font-size: 24px; font-weight: 700; color: var(--primary-500);">0</div>
+                    <div class="stat-label" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                        Activities</div>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="social-links" id="social-links">
+                <!-- Injected via JS -->
+            </div>
+
+            <div style="font-size: 12px; color: var(--text-description);">
+                <button id="btn-share-profile" class="btn btn-ghost" style="font-size: 12px;">Share Profile 🔗</button>
+            </div>
+        </aside>
+
+        <!-- Right Column: Main Content -->
+        <main class="profile-content">
+            <!-- Tabs -->
+            <div class="profile-tabs">
+                <div class="profile-tab active" data-tab="profile">Profile</div>
+                <div class="profile-tab" data-tab="groups">Groups</div>
+                <div class="profile-tab" data-tab="availability">Availability</div>
+                <div class="profile-tab" data-tab="preferences">Preferences</div>
+                <div class="profile-tab" data-tab="activity">Activity</div>
+                <div class="profile-tab" data-tab="settings">Settings</div>
+            </div>
+
+            <!-- Tab: Profile Details -->
+            <div id="profile" class="tab-content active">
+                <div style="margin-bottom: 32px;">
+                    <h2 class="section-title">About Me</h2>
+                    <p id="profile-extended-bio" style="color: var(--text-muted); line-height: 1.6;">
+                        No bio added yet. Click "Edit Profile" to add one.
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 32px;">
+                    <h2 class="section-title">Interests & Skills</h2>
+                    <div id="interests-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Social Links Section -->
+                <div style="margin-bottom: 32px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h2 class="section-title">Social Links</h2>
+                        <button class="btn btn-ghost btn-sm" id="btn-edit-social-links">Edit Links</button>
+                    </div>
+                    <div id="social-links-display" style="display: flex; flex-wrap: wrap; gap: 12px;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <h2 class="section-title" style="font-size: 16px; margin-bottom: 12px;">Languages</h2>
+                        <div id="languages-container" style="color: var(--text-muted);">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="section-title" style="font-size: 16px; margin-bottom: 12px;">Gender Preference</h2>
+                        <div style="color: var(--text-muted);">
+                            <span id="gender-pref">Mixed</span>
+                            <span
+                                style="font-size: 11px; color: var(--text-description); display: block; margin-top: 4px;">(Visible
+                                to group organizers)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Groups -->
+            <div id="groups" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 class="section-title" style="margin: 0;">My Groups</h2>
+                    <button class="btn btn-primary btn-sm">Create Group</button>
+                </div>
+                <div id="groups-container">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Tab: Availability (Enhanced) -->
+            <div id="availability" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 class="section-title" style="margin: 0;">Weekly Schedule</h2>
+                    <button id="btn-add-slot" class="btn btn-ghost btn-sm" style="color: var(--primary-500);">+ Add
+                        Slot</button>
+                </div>
+                <div id="availability-list" style="display: grid; gap: 12px;"></div>
+                <div
+                    style="margin-top: 24px; padding: 16px; background: var(--surface-50); border-radius: 8px; border: 1px dashed var(--surface-300); text-align: center; color: var(--text-muted); font-size: 13px;">
+                    Sync with Google Calendar feature coming soon.
+                </div>
+            </div>
+
+            <!-- Tab: Preferences -->
+            <div id="preferences" class="tab-content">
+                <h2 class="section-title">Matching Preferences</h2>
+
+                <div style="margin-bottom: 24px;">
+                    <label
+                        style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">Search
+                        Radius: <span style="color: var(--base-white); font-weight: 600;">15 km</span></label>
+                    <input type="range" min="1" max="50" value="15"
+                        style="width: 100%; accent-color: var(--primary-500); height: 6px; background: var(--surface-200); border-radius: 4px;">
+                    <div
+                        style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-description); margin-top: 8px;">
+                        <span>1 km</span>
+                        <span>50 km</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label
+                        style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">Location</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="location-input" value="Connaught Place, New Delhi"
+                            style="flex: 1; background: var(--surface-50); border: 1px solid var(--surface-200); padding: 10px; border-radius: 8px; color: var(--base-white);">
+                        <button class="btn btn-secondary" id="btn-detect-location">Detect</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Activity -->
+            <div id="activity" class="tab-content">
+                <h2 class="section-title">Activity History</h2>
+                <div id="activity-timeline" style="padding-top: 12px;">
+                    <p style="color: var(--text-muted); text-align: center; padding: 40px;">
+                        No recent activity. Join or create groups to see your activity here!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tab: Settings -->
+            <div id="settings" class="tab-content">
+                <h2 class="section-title">Settings & Privacy</h2>
+
+                <div style="margin-bottom: 32px;">
+                    <h3 style="font-size: 16px; color: var(--base-white); margin-bottom: 16px;">Privacy Controls</h3>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <label class="checkbox-option"
+                            style="display: flex; gap: 12px; align-items: center; cursor: pointer;">
+                            <input type="checkbox" checked>
+                            <div>
+                                <div style="font-size: 14px; color: var(--base-white);">Show availability to everyone
+                                </div>
+                                <div style="font-size: 12px; color: var(--text-description);">Allow non-members to see
+                                    when you are free.</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-option"
+                            style="display: flex; gap: 12px; align-items: center; cursor: pointer;">
+                            <input type="checkbox">
+                            <div>
+                                <div style="font-size: 14px; color: var(--base-white);">Hide my location details</div>
+                                <div style="font-size: 12px; color: var(--text-description);">Only show approximate
+                                    city/area.</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="font-size: 16px; color: var(--base-white); margin-bottom: 16px;">Account Actions</h3>
+                    <button id="btn-delete-account" class="btn btn-secondary btn-sm"
+                        style="color: #ef4444; border-color: #ef444450;">Delete Account</button>
+                </div>
+            </div>
+
+        </main>
+        <!-- Modals -->
+        <div id="edit-profile-modal" class="modal-overlay"
+            style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+            <div
+                style="background: var(--surface-100); padding: 32px; border-radius: 16px; width: 90%; max-width: 500px; border: 1px solid var(--surface-200);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 class="section-title" style="margin: 0;">Edit Profile</h2>
+                    <button type="button" id="closeEditModal"
+                        style="background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+                </div>
+                <form id="editProfileForm" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div>
+                        <label
+                            style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Display
+                            Name</label>
+                        <input type="text" id="edit-name" class="input" required
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--surface-200); background: var(--surface-50); color: white;"
+                            value="John Doe">
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Bio</label>
+                        <textarea id="edit-bio" class="input" rows="3" required
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--surface-200); background: var(--surface-50); color: white;">Enthusiast.</textarea>
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
+                        <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Slot Modal -->
+        <div id="add-slot-modal" class="modal-overlay"
+            style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+            <div
+                style="background: var(--surface-100); padding: 32px; border-radius: 16px; width: 90%; max-width: 400px; border: 1px solid var(--surface-200);">
+                <h2 class="section-title" style="margin-bottom: 24px;">Add Availability</h2>
+                <form id="add-slot-form" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div>
+                        <label
+                            style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Day</label>
+                        <select id="slot-day" required
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--surface-200); background: var(--surface-50); color: white;">
+                            <option>Saturday</option>
+                            <option>Sunday</option>
+                            <option>Monday</option>
+                            <option>Tuesday</option>
+                            <option>Wednesday</option>
+                            <option>Thursday</option>
+                            <option>Friday</option>
+                        </select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">From</label>
+                            <input type="time" id="slot-start" value="09:00" required
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--surface-200); background: var(--surface-50); color: white;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">To</label>
+                            <input type="time" id="slot-end" value="12:00" required
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--surface-200); background: var(--surface-50); color: white;">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
+                        <button type="button" class="btn btn-secondary" id="cancel-add-slot">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Slot</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-content"
+            style="background: var(--surface-100); border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; border: 1px solid var(--surface-200);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="font-family: 'Clash Display', sans-serif; font-size: 24px; margin: 0;">Edit Profile</h2>
+                <button id="closeEditModal" class="btn btn-ghost"
+                    style="padding: 8px; font-size: 20px;">&times;</button>
+            </div>
+
+            <form id="editProfileForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <!-- Name -->
+                <div>
+                    <label for="edit-name"
+                        style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Display
+                        Name</label>
+                    <input type="text" id="edit-name" name="displayName" class="input-field" placeholder="Your name"
+                        required
+                        style="width: 100%; padding: 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 8px; color: var(--base-white); font-size: 14px;">
+                </div>
+
+                <!-- Bio -->
+                <div>
+                    <label for="edit-bio"
+                        style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Bio</label>
+                    <textarea id="edit-bio" name="bio" class="input-field" placeholder="Tell us about yourself..."
+                        rows="4"
+                        style="width: 100%; padding: 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 8px; color: var(--base-white); font-size: 14px; resize: vertical;"></textarea>
+                </div>
+
+                <!-- Photo Upload -->
+                <div>
+                    <label for="edit-photo"
+                        style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Profile
+                        Photo</label>
+                    <input type="file" id="edit-photo" accept="image/*"
+                        style="width: 100%; padding: 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 8px; color: var(--base-white); font-size: 14px;">
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Max 5MB. JPG, PNG, or GIF.
+                    </p>
+                </div>
+
+                <!-- Buttons -->
+                <div style="display: flex; gap: 12px; margin-top: 8px;">
+                    <button type="button" id="cancelEditBtn" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+                    <button type="submit" id="saveEditBtn" class="btn btn-primary" style="flex: 1;">Save
+                        Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Social Links Modal -->
+    <div id="edit-social-links-modal" class="modal-overlay"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div
+            style="background: var(--surface-100); padding: 32px; border-radius: 16px; width: 90%; max-width: 500px; border: 1px solid var(--surface-200);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 class="section-title" style="margin: 0;">Edit Social Links</h2>
+                <button type="button" id="closeSocialLinksModal"
+                    style="background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+            </div>
+            <form id="editSocialLinksForm" style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">
+                        📷 Instagram
+                    </label>
+                    <input type="url" id="social-instagram" class="input" placeholder="https://instagram.com/username"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--surface-200); background: var(--surface-50); color: white;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">
+                        🐦 Twitter / X
+                    </label>
+                    <input type="url" id="social-twitter" class="input" placeholder="https://twitter.com/username"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--surface-200); background: var(--surface-50); color: white;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">
+                        💼 LinkedIn
+                    </label>
+                    <input type="url" id="social-linkedin" class="input" placeholder="https://linkedin.com/in/username"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--surface-200); background: var(--surface-50); color: white;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">
+                        💻 GitHub
+                    </label>
+                    <input type="url" id="social-github" class="input" placeholder="https://github.com/username"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--surface-200); background: var(--surface-50); color: white;">
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
+                    <button type="button" class="btn btn-secondary" id="cancelSocialLinksBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveSocialLinksBtn">Save Links</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inline Tab Switching (Fallback for file:// protocol) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 Profile page loaded');
+
+            // Setup tab switching (works without ES6 modules)
+            const tabs = document.querySelectorAll('.profile-tab');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.dataset.tab;
+                    if (!targetId) return;
+
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+
+                    // Show corresponding content
+                    const targetContent = document.getElementById(targetId);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+
+                    console.log('✅ Switched to tab:', targetId);
+                });
+            });
+
+            console.log('✅ Tab switching initialized (inline)');
+        });
+    </script>
+
+    <!-- Module-based initialization (requires HTTP server) -->
+    <script type="module" src="../js/profile-page-init.js"></script>
+
+</body>
+
+</html>

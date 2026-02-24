@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Details | ECA-Connect</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+    <nav style="padding: var(--space-16); border-bottom: 1px solid var(--surface-200);">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <a href="dashboard.html" class="btn btn-ghost">← Back</a>
+        </div>
+    </nav>
+
+    <!-- Hero Image -->
+    <div id="gd-hero-color"
+        style="height: 200px; background: var(--surface-200); max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 64px; color: rgba(255,255,255,0.8);">
+        <!-- Icon/Initial goes here -->
+    </div>
+
+    <main style="max-width: 1200px; margin: 0 auto; padding: 0 24px 64px;">
+        <a href="dashboard.html" class="btn btn-ghost" style="margin-bottom: 24px;">← Back to Dashboard</a>
+
+        <div id="loading" style="text-align: center; padding: 64px;">
+            <div style="font-size: 40px; margin-bottom: 16px;">⏳</div>
+            <p>Loading group details...</p>
+        </div>
+
+        <div id="content" style="display: none; grid-template-columns: 1fr 340px; gap: 48px;">
+            <!-- Main Content -->
+            <div>
+                <div id="gd-hero"
+                    style="height: 300px; border-radius: 16px; background-size: cover; background-position: center; position: relative; margin-bottom: 32px; display: flex; align-items: flex-end; overflow: hidden;">
+                    <div
+                        style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);">
+                    </div>
+                    <div style="position: relative; z-index: 1; padding: 32px; width: 100%;">
+                        <span id="gd-category"
+                            style="background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); color: white; margin-bottom: 12px; display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; border: 1px solid rgba(255,255,255,0.1);">Category</span>
+                        <h1 id="gd-name" style="font-size: 32px; color: white; margin-bottom: 8px; margin-top: 0;">Group
+                            Name</h1>
+                        <div style="display: flex; gap: 16px; color: rgba(255,255,255,0.8); font-size: 14px;">
+                            <span id="gd-members">0 Members</span>
+                            <span id="gd-distance">0 km away</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 32px;">
+                    <h2 style="font-size: 20px; color: var(--base-white); margin-bottom: 16px;">About</h2>
+                    <p id="gd-desc" style="color: var(--text-description); line-height: 1.6;">Description...</p>
+                </div>
+
+                <div style="margin-bottom: 32px;">
+                    <h2 style="font-size: 20px; color: var(--base-white); margin-bottom: 16px;">Interests</h2>
+                    <div id="gd-tags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <aside>
+                <div
+                    style="background: var(--surface-100); border: 1px solid var(--surface-200); border-radius: 16px; padding: 24px; position: sticky; top: 100px;">
+                    <h3 style="margin-bottom: 24px; color: var(--base-white); font-size: 18px; margin-top: 0;">Session
+                        Details</h3>
+
+                    <div style="margin-bottom: 20px;">
+                        <label
+                            style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Next
+                            Meeting</label>
+                        <div id="gd-time" style="color: var(--base-white); font-weight: 500;">...</div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label
+                            style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Location</label>
+                        <div id="gd-location" style="color: var(--base-white); font-weight: 500;">...</div>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <label
+                            style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Skill
+                            Level</label>
+                        <div id="gd-skill"
+                            style="color: var(--base-white); font-weight: 500; text-transform: capitalize;">...</div>
+                    </div>
+
+                    <button id="gd-join-btn" class="btn btn-primary"
+                        style="width: 100%; justify-content: center;">Request to Join</button>
+                    <p style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 12px;">
+                        This group is <span id="gd-privacy"
+                            style="font-weight: 600; color: var(--base-white);">Open</span>
+                    </p>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script type="module" src="../js/group-details-integration.js"></script>
+    <script type="module">
+        import { mockGroups } from '../js/mock-data-v2.js';
+
+        const params = new URLSearchParams(window.location.search);
+        const groupId = params.get('id');
+
+        const group = mockGroups.find(g => g.id === groupId);
+
+        if (group) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'grid';
+
+            // Populate Data
+            document.getElementById('gd-name').textContent = group.name;
+            document.getElementById('gd-desc').textContent = group.description;
+            document.getElementById('gd-category').textContent = group.category || 'General';
+            document.getElementById('gd-members').textContent = `👥 ${group.members} Members`;
+            document.getElementById('gd-distance').textContent = `📍 ${group.distance} km away`;
+
+            document.getElementById('gd-time').textContent = group.nextSession || 'TBA';
+            document.getElementById('gd-location').textContent = group.locationName || 'Unknown Location';
+            document.getElementById('gd-skill').textContent = group.skillLevel || 'All Levels';
+            document.getElementById('gd-privacy').textContent = group.privacy || 'Open';
+
+            // Hero Image
+            const cleanColor = group.imageColor ? group.imageColor.replace('#', '') : '10B981';
+            document.getElementById('gd-hero').style.backgroundImage = `url('https://placehold.co/800x400/${cleanColor}/ffffff?text=${encodeURIComponent(group.name)}')`;
+
+            // Tags
+            const tagsContainer = document.getElementById('gd-tags');
+            group.tags.forEach(tag => {
+                const badge = document.createElement('span');
+                badge.style.background = 'var(--surface-200)';
+                badge.style.color = 'var(--text-muted)';
+                badge.style.padding = '4px 12px';
+                badge.style.borderRadius = '20px';
+                badge.style.fontSize = '12px';
+                badge.textContent = tag;
+                tagsContainer.appendChild(badge);
+            });
+
+            // Join Button Logic
+            const joinBtn = document.getElementById('gd-join-btn');
+            joinBtn.onclick = () => {
+                joinBtn.textContent = 'Request Sent! ✓';
+                joinBtn.disabled = true;
+                joinBtn.style.textAlign = 'center';
+                joinBtn.style.background = 'var(--surface-200)';
+                joinBtn.style.color = 'var(--text-muted)';
+                joinBtn.style.borderColor = 'transparent';
+                alert('Your request to join this group has been sent!');
+            };
+
+        } else {
+            document.getElementById('loading').innerHTML = '<p>Group not found.</p><a href="dashboard.html" class="btn btn-primary" style="margin-top: 16px;">Go to Dashboard</a>';
+        }
+    </script>
+
+    <!-- Edit Group Modal -->
+    <div id="edit-group-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto;">
+        <div
+            style="background: var(--surface-100); padding: 32px; border-radius: 16px; width: 90%; max-width: 600px; margin: 40px auto; border: 1px solid var(--surface-200); box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 24px; color: var(--base-white);">Edit Group</h2>
+                <button id="close-edit-modal"
+                    style="background: none; border: none; color: var(--text-muted); font-size: 28px; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+            </div>
+
+            <form id="edit-group-form">
+                <div style="margin-bottom: 20px;">
+                    <label
+                        style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Group
+                        Name *</label>
+                    <input type="text" id="edit-group-name" class="input" required style="width: 100%; padding: 12px;">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label
+                        style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Description
+                        *</label>
+                    <textarea id="edit-description" class="input" rows="4" required
+                        style="width: 100%; padding: 12px; resize: vertical;"></textarea>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label
+                        style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Category
+                        *</label>
+                    <select id="edit-category" class="input" required style="width: 100%; padding: 12px;">
+                        <option value="">Select category</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Education">Education</option>
+                        <option value="Social">Social</option>
+                        <option value="Arts">Arts</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Health">Health & Wellness</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label
+                        style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Tags
+                        (comma-separated)</label>
+                    <input type="text" id="edit-tags" class="input" placeholder="e.g., football, weekend, beginners"
+                        style="width: 100%; padding: 12px;">
+                    <small style="color: var(--text-muted); font-size: 12px;">Separate tags with commas</small>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label
+                        style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Skill
+                        Level *</label>
+                    <select id="edit-skill-level" class="input" required style="width: 100%; padding: 12px;">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label
+                        style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Privacy
+                        *</label>
+                    <select id="edit-privacy" class="input" required style="width: 100%; padding: 12px;">
+                        <option value="open">Open (Anyone can join)</option>
+                        <option value="closed">Closed (Approval required)</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label
+                        style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">WhatsApp
+                        Group Link</label>
+                    <input type="url" id="edit-whatsapp-link" class="input" placeholder="https://chat.whatsapp.com/..."
+                        style="width: 100%; padding: 12px;">
+                    <small style="color: var(--text-muted); font-size: 12px;">Optional: Share your WhatsApp group invite
+                        link</small>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label
+                        style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Max
+                        Members</label>
+                    <input type="number" id="edit-max-members" class="input" min="2" max="500" placeholder="No limit"
+                        style="width: 100%; padding: 12px;">
+                    <small style="color: var(--text-muted); font-size: 12px;">Leave empty for no limit</small>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" id="cancel-edit-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" id="save-edit-btn" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

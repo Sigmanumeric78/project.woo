@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Library | ECA-Connect</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        body {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--surface-200);
+            padding-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--primary-500);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Component Library</h1>
+
+    <section>
+        <h2>Search Bar</h2>
+        <div class="search-container" style="max-width: 400px;">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="input search-input" placeholder="Search groups...">
+            <span class="search-filter-pill">Filters</span>
+        </div>
+    </section>
+
+    <section>
+        <h2>Form Components</h2>
+        <div style="max-width: 400px;">
+            <div class="form-group">
+                <label class="label">Event Name</label>
+                <input type="text" class="input" placeholder="Enter name">
+                <div class="helper-text">Must be unique</div>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Date & Time</label>
+                <div class="picker-group">
+                    <input type="date" class="datetime-input">
+                    <input type="time" class="datetime-input">
+                </div>
+                <label style="margin-top: 8px; display: flex; gap: 8px;">
+                    <input type="checkbox"> Recurring Weekly
+                </label>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Availability Selector</h2>
+        <div class="availability-chip-list">
+            <div class="avail-chip active">Sat Morning</div>
+            <div class="avail-chip">Sat Evening</div>
+            <div class="avail-chip">Sun Morning</div>
+            <div class="avail-chip">+ Custom</div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Radius Slider</h2>
+        <div class="radius-slider-container" style="max-width: 400px;">
+            <input type="range" class="range-slider" min="1" max="25" value="5">
+            <div class="radius-ticks">
+                <span>1km</span>
+                <span>5km</span>
+                <span>10km</span>
+                <span>25km</span>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Cards</h2>
+        <div class="grid">
+            <!-- Compact Card -->
+            <div class="card card-compact">
+                <div class="card-header-img" style="background:var(--primary-100);"></div>
+                <div style="flex-grow: 1;">
+                    <div style="font-weight: 700;">Evening Badminton</div>
+                    <div class="text-muted" style="font-size: var(--text-xs);">Sat, 6:00 PM • 0.5km</div>
+                </div>
+                <button class="btn btn-primary btn-sm">Join</button>
+            </div>
+
+            <!-- Expanded Card -->
+            <article class="card">
+                <div
+                    style="height: 140px; background-color: var(--secondary-500); display: flex; align-items: center; justify-content: center; color: white; font-size: 32px;">
+                    🏞️
+                </div>
+                <div style="padding: var(--space-16);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-8);">
+                        <span class="badge" style="background: var(--match-perfect); color: white;">98% Match</span>
+                        <div class="health-badge health-active" title="Active Group"></div>
+                    </div>
+                    <h4>Sunday Hiking</h4>
+                    <p class="text-muted" style="font-size: var(--text-sm); margin-bottom: 1rem;">Easy trail hike for
+                        beginners.</p>
+
+                    <!-- Compatibility Meter -->
+                    <div style="margin-bottom: 1rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: var(--text-xs); margin-bottom: 4px;">
+                            <span>Compatibility</span>
+                            <span>98%</span>
+                        </div>
+                        <div class="compatibility-meter meter-perfect">
+                            <div class="meter-fill" style="width: 98%;"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%;">View Details</button>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section>
+        <h2>Map Pins</h2>
+        <div style="display: flex; gap: 40px; padding: 20px;">
+            <div class="map-pin"></div>
+            <div class="map-pin secondary"></div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Toasts</h2>
+        <div class="toast toast-success"
+            style="position: static; transform: none; display: inline-flex; margin-bottom: 10px;">
+            <span>✅</span>
+            <span>Group created successfully!</span>
+        </div>
+        <div class="toast toast-error" style="position: static; transform: none; display: inline-flex;">
+            <span>⚠️</span>
+            <span>Connection failed.</span>
+        </div>
+    </section>
+
+</body>
+
+</html>

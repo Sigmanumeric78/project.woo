@@ -1,0 +1,250 @@
+/* Dashboard Specific Styles */
+
+/* --- Layout Grid --- */
+.groups-grid {
+    display: grid;
+    /* Smaller minimum width for more compact cards */
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+    gap: 20px !important;
+}
+
+/* --- Minimalist Card --- */
+.card-minimal {
+    background: var(--surface-100);
+    border: 1px solid var(--surface-200);
+    border-radius: var(--radius-md);
+    /* Reduced radius */
+    overflow: hidden;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-minimal:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--surface-300);
+}
+
+.card-minimal-header {
+    height: 80px;
+    /* Reduced height from 120px */
+    position: relative;
+    background-size: cover;
+    background-position: center;
+}
+
+.card-minimal-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--base-white);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.card-description {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* --- Compatibility Bar Minimal --- */
+.compat-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.compat-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: var(--surface-300);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.compat-bar-fill {
+    height: 100%;
+    background: var(--primary-500);
+    border-radius: 99px;
+}
+
+.compat-score {
+    font-weight: 700;
+    color: var(--primary-500);
+    min-width: 32px;
+    text-align: right;
+}
+
+/* --- Icon Row --- */
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-description);
+    margin-top: auto;
+    /* Push to bottom */
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* --- Badges --- */
+.status-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- Breatheable Filters --- */
+#filter-sidebar>div {
+    padding: 24px !important;
+    border: none !important;
+    background: transparent !important;
+    /* Remove boxy background */
+}
+
+/* Add subtle separator instead of box */
+#filter-sidebar {
+    border-right: 1px solid var(--surface-200);
+    padding-right: 20px;
+}
+
+.sidebar-title {
+    font-size: 20px;
+    margin-bottom: 24px;
+    color: var(--base-white);
+    font-weight: 700;
+}
+
+/* --- Loading State (Skeleton) --- */
+.skeleton-card {
+    background: var(--surface-100);
+    border: 1px solid var(--surface-200);
+    border-radius: var(--radius-md);
+    height: 380px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    /* Shimmer effect */
+}
+
+.skeleton-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.05) 50%,
+            transparent 100%);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.skeleton-header {
+    height: 140px;
+    background: var(--surface-200);
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.skeleton-body {
+    padding: 16px;
+}
+
+.skeleton-text {
+    height: 16px;
+    background: var(--surface-200);
+    margin-bottom: 12px;
+    border-radius: 4px;
+}
+
+.skeleton-text.short {
+    width: 60%;
+}
+
+.skeleton-text.long {
+    width: 90%;
+}
+
+
+/* --- Empty State --- */
+.empty-state-container {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    background: var(--surface-50);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--surface-200);
+    margin-top: 20px;
+    grid-column: 1 / -1;
+    /* Span all columns */
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--base-white);
+    margin-bottom: 8px;
+}
+
+.empty-action-btn {
+    margin-top: 24px;
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid var(--primary-500);
+    color: var(--primary-500);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.empty-action-btn:hover {
+    background: var(--primary-500);
+    color: var(--base-white);
+}

@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup | ECA-Connect</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        /* Multi-Step Onboarding Styles */
+        .onboarding-container {
+            min-height: 100vh;
+            background: var(--base-black);
+            padding: var(--space-24) var(--space-16);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .onboarding-wrapper {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Progress Indicator */
+        .progress-header {
+            margin-bottom: var(--space-32);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-16);
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--surface-200);
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: var(--primary-500);
+            transition: width 0.3s ease;
+        }
+
+        .progress-step {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-8);
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface-100);
+            border: 2px solid var(--surface-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-circle {
+            background: var(--primary-500);
+            border-color: var(--primary-500);
+            color: var(--base-black);
+            box-shadow: 0 0 0 4px var(--primary-50);
+        }
+
+        .progress-step.completed .step-circle {
+            background: var(--secondary-500);
+            border-color: var(--secondary-500);
+            color: var(--base-black);
+        }
+
+        .step-label {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            text-align: center;
+            display: none;
+        }
+
+        .progress-step.active .step-label {
+            color: var(--base-white);
+            font-weight: 600;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--text-description);
+            font-size: var(--text-sm);
+        }
+
+        /* Step Container */
+        .step-container {
+            background: var(--surface-100);
+            border-radius: var(--radius-lg);
+            padding: var(--space-32);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--space-24);
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-title {
+            font-size: var(--text-h3);
+            margin-bottom: var(--space-8);
+            color: var(--base-white);
+        }
+
+        .step-description {
+            color: var(--text-description);
+            margin-bottom: var(--space-24);
+            font-size: var(--text-sm);
+        }
+
+        /* Navigation Buttons */
+        .step-navigation {
+            display: flex;
+            gap: var(--space-16);
+            justify-content: space-between;
+            margin-top: var(--space-24);
+        }
+
+        .btn-nav {
+            flex: 1;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 640px) {
+            .step-label {
+                display: block;
+            }
+
+            .step-circle {
+                width: 48px;
+                height: 48px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .onboarding-container {
+                padding: var(--space-48) var(--space-24);
+            }
+
+            .step-container {
+                padding: var(--space-48);
+            }
+        }
+
+        @media (max-width: 639px) {
+            .progress-steps {
+                justify-content: space-around;
+            }
+
+            .step-circle {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .progress-line {
+                top: 16px;
+            }
+        }
+
+        /* Interests Selection Styles */
+        .interests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: var(--space-12);
+            margin-bottom: var(--space-24);
+        }
+
+        .interest-chip {
+            padding: var(--space-12) var(--space-16);
+            border: 2px solid var(--surface-200);
+            border-radius: var(--radius-md);
+            background: var(--surface-50);
+            color: var(--text-description);
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .interest-chip:hover {
+            border-color: var(--surface-300);
+            background: var(--surface-100);
+        }
+
+        .interest-chip.selected {
+            background: var(--primary-500);
+            border-color: var(--primary-500);
+            color: var(--base-black);
+            font-weight: 600;
+        }
+
+        .skill-level-item {
+            background: var(--surface-50);
+            border: 1px solid var(--surface-200);
+            border-radius: var(--radius-md);
+            padding: var(--space-16);
+            margin-bottom: var(--space-16);
+        }
+
+        .skill-level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-12);
+        }
+
+        .skill-level-name {
+            font-weight: 600;
+            color: var(--base-white);
+            font-size: var(--text-base);
+        }
+
+        .skill-buttons {
+            display: flex;
+            gap: var(--space-8);
+        }
+
+        .skill-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--surface-300);
+            border-radius: var(--radius-sm);
+            background: var(--surface-100);
+            color: var(--text-description);
+            font-size: var(--text-xs);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .skill-btn:hover {
+            background: var(--surface-200);
+        }
+
+        .skill-btn.active {
+            background: var(--secondary-500);
+            border-color: var(--secondary-500);
+            color: var(--base-black);
+            font-weight: 600;
+        }
+
+        @media (max-width: 639px) {
+            .interests-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: var(--space-8);
+            }
+
+            .interest-chip {
+                padding: var(--space-8) var(--space-12);
+                font-size: 12px;
+            }
+
+            .skill-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .skill-btn {
+                width: 100%;
+            }
+        }
+
+        /* Availability Selection Styles */
+        .weekday-chips {
+            display: flex;
+            gap: var(--space-8);
+            flex-wrap: wrap;
+            margin-bottom: var(--space-24);
+        }
+
+        .weekday-chip {
+            padding: var(--space-12) var(--space-16);
+            border: 2px solid var(--surface-200);
+            border-radius: var(--radius-md);
+            background: var(--surface-50);
+            color: var(--text-description);
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .weekday-chip:hover {
+            border-color: var(--surface-300);
+            background: var(--surface-100);
+        }
+
+        .weekday-chip.selected {
+            background: var(--primary-500);
+            border-color: var(--primary-500);
+            color: var(--base-black);
+            font-weight: 600;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-12);
+            margin-bottom: var(--space-24);
+        }
+
+        .time-slot-chip {
+            padding: var(--space-16);
+            border: 2px solid var(--surface-200);
+            border-radius: var(--radius-md);
+            background: var(--surface-50);
+            color: var(--text-description);
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .time-slot-chip:hover {
+            border-color: var(--surface-300);
+            background: var(--surface-100);
+        }
+
+        .time-slot-chip.selected {
+            background: var(--primary-500);
+            border-color: var(--primary-500);
+            color: var(--base-black);
+            font-weight: 600;
+        }
+
+        .time-slot-label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .time-slot-time {
+            font-size: var(--text-xs);
+            opacity: 0.8;
+        }
+
+        .recurring-toggle {
+            background: var(--surface-50);
+            border: 1px solid var(--surface-200);
+            border-radius: var(--radius-md);
+            padding: var(--space-16);
+            margin-top: var(--space-24);
+        }
+
+        .toggle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .toggle-label {
+            font-weight: 600;
+            color: var(--base-white);
+            font-size: var(--text-base);
+        }
+
+        .toggle-description {
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+        }
+
+        /* Toggle Switch Component */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--surface-300);
+            transition: 0.3s;
+            border-radius: 28px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--base-white);
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background-color: var(--primary-500);
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        @media (max-width: 639px) {
+            .weekday-chips {
+                gap: var(--space-4);
+            }
+
+            .weekday-chip {
+                padding: var(--space-8) var(--space-12);
+                min-width: 50px;
+                font-size: 12px;
+            }
+
+            .time-slots {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="onboarding-container">
+        <div class="onboarding-wrapper">
+            <!-- Progress Header -->
+            <div class="progress-header">
+                <div class="progress-steps">
+                    <div class="progress-line">
+                        <div class="progress-line-fill" id="progressLineFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <span class="step-label">Interests</span>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <span class="step-label">Availability</span>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <span class="step-label">Location</span>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <span class="step-label">Preferences</span>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="step-circle">5</div>
+                        <span class="step-label">Finish</span>
+                    </div>
+                </div>
+                <p class="progress-text">Step <span id="currentStepNum">1</span> of 5</p>
+            </div>
+
+            <!-- Step 1: Interests & Skill Levels -->
+            <div class="step-container active" id="step1">
+                <h2 class="step-title">What are your interests?</h2>
+                <p class="step-description">Select activities you enjoy and choose your skill level for each. Select at
+                    least one interest.</p>
+
+                <div id="interestsContent">
+                    <div class="interests-grid" id="interestsGrid"></div>
+
+                    <div id="selectedInterestsSection" style="margin-top: var(--space-32); display: none;">
+                        <h3
+                            style="font-size: var(--text-lg); margin-bottom: var(--space-16); color: var(--base-white);">
+                            Set Your Skill Levels
+                        </h3>
+                        <div id="skillLevelSelectors"></div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-ghost btn-nav" id="backBtn1" disabled>Back</button>
+                    <button class="btn btn-primary btn-nav" id="nextBtn1" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Availability -->
+            <div class="step-container" id="step2">
+                <h2 class="step-title">When are you available?</h2>
+                <p class="step-description">Select the days and times when you're free. Choose at least one day and one
+                    time slot.</p>
+
+                <div id="availabilityContent">
+                    <h3 style="font-size: var(--text-base); margin-bottom: var(--space-12); color: var(--base-white);">
+                        Select Days
+                    </h3>
+                    <div class="weekday-chips" id="weekdayChips"></div>
+
+                    <h3
+                        style="font-size: var(--text-base); margin-bottom: var(--space-12); color: var(--base-white); margin-top: var(--space-24);">
+                        Select Time Slots
+                    </h3>
+                    <div class="time-slots" id="timeSlots"></div>
+
+                    <!-- Custom Time Range -->
+                    <h3
+                        style="font-size: var(--text-base); margin-bottom: var(--space-12); color: var(--base-white); margin-top: var(--space-24);">
+                        Or Set Custom Time Range (Optional)
+                    </h3>
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16); margin-bottom: var(--space-16);">
+                        <!-- From Time -->
+                        <div>
+                            <label class="label">From</label>
+                            <div style="display: flex; gap: var(--space-8); align-items: center;">
+                                <input type="text" class="input" id="customTimeFrom" placeholder="09:00"
+                                    style="flex: 1;" maxlength="5">
+                                <div style="display: flex; gap: 4px;">
+                                    <button type="button" class="time-period-btn" id="fromAM"
+                                        style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
+                                        AM
+                                    </button>
+                                    <button type="button" class="time-period-btn" id="fromPM"
+                                        style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
+                                        PM
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- To Time -->
+                        <div>
+                            <label class="label">To</label>
+                            <div style="display: flex; gap: var(--space-8); align-items: center;">
+                                <input type="text" class="input" id="customTimeTo" placeholder="05:00" style="flex: 1;"
+                                    maxlength="5">
+                                <div style="display: flex; gap: 4px;">
+                                    <button type="button" class="time-period-btn" id="toAM"
+                                        style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
+                                        AM
+                                    </button>
+                                    <button type="button" class="time-period-btn" id="toPM"
+                                        style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
+                                        PM
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--text-xs); color: var(--text-muted); margin-bottom: var(--space-16);">
+                        💡 Custom time range will override the selected time slots above
+                    </p>
+
+                    <div class="recurring-toggle">
+                        <div class="toggle-header">
+                            <span class="toggle-label">Availability Pattern</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="recurringToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <p class="toggle-description" id="recurringDescription">
+                            This availability repeats every week
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary btn-nav" id="backBtn2">Back</button>
+                    <button class="btn btn-primary btn-nav" id="nextBtn2" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Location -->
+            <div class="step-container" id="step3">
+                <h2 class="step-title">Where are you located?</h2>
+                <p class="step-description">Help us find groups near you. Use geolocation or enter manually.</p>
+
+                <div id="locationContent">
+                    <!-- Geolocation Button -->
+                    <button type="button" class="btn btn-primary" id="geolocateBtn"
+                        style="width: 100%; margin-bottom: var(--space-24);">
+                        📍 Use My Current Location
+                    </button>
+
+                    <div
+                        style="text-align: center; margin-bottom: var(--space-16); color: var(--text-muted); font-size: var(--text-sm);">
+                        OR
+                    </div>
+
+                    <!-- Manual Location Fields -->
+                    <div id="manualLocationFields" style="display: grid; gap: var(--space-16);">
+                        <div>
+                            <label class="label">Address (Optional)</label>
+                            <textarea class="textarea" id="address" rows="2" placeholder="Street address"></textarea>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16);">
+                            <div>
+                                <label class="label">Pin Code *</label>
+                                <input type="text" class="input" id="pinCode" placeholder="e.g., 110001" maxlength="6"
+                                    required>
+                                <span id="pinCodeError" class="error-message" style="display: none;">Invalid pin
+                                    code</span>
+                            </div>
+                            <div>
+                                <label class="label">District *</label>
+                                <input type="text" class="input" id="district" placeholder="Auto-filled from pin code"
+                                    readonly required>
+                                <span id="districtError" class="error-message" style="display: none;">District not
+                                    found</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="label">State *</label>
+                            <input type="text" class="input" id="state" placeholder="Auto-filled from pin code" readonly
+                                required>
+                            <span id="stateError" class="error-message" style="display: none;">State not found</span>
+                        </div>
+                    </div>
+
+                    <!-- Map Placeholder -->
+                    <div
+                        style="margin-top: var(--space-24); padding: var(--space-32); background: var(--surface-50); border: 2px dashed var(--surface-300); border-radius: var(--radius-md); text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: var(--space-8);">🗺️</div>
+                        <p style="color: var(--text-muted); font-size: var(--text-sm);">Map integration coming soon</p>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary btn-nav" id="backBtn3">Back</button>
+                    <button class="btn btn-primary btn-nav" id="nextBtn3" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Preferences -->
+            <div class="step-container" id="step4">
+                <h2 class="step-title">Set your preferences</h2>
+                <p class="step-description">Customize your search settings to find the best matches.</p>
+
+                <div id="preferencesContent">
+                    <!-- Radius Slider -->
+                    <div style="margin-bottom: var(--space-32);">
+                        <label class="label">Search Radius: <span id="radiusValue">5</span> km</label>
+                        <input type="range" id="radiusSlider" min="1" max="50" value="5"
+                            style="width: 100%; height: 8px; background: var(--surface-300); border-radius: 4px; outline: none; appearance: none; -webkit-appearance: none;" />
+                        <div
+                            style="display: flex; justify-content: space-between; margin-top: var(--space-8); font-size: var(--text-xs); color: var(--text-muted);">
+                            <span>1 km</span>
+                            <span>50 km</span>
+                        </div>
+                    </div>
+
+                    <!-- Preferred Language -->
+                    <div style="margin-bottom: var(--space-24);">
+                        <label class="label">Preferred Language *</label>
+                        <select class="input" id="language" required>
+                            <option value="">Select language</option>
+                            <option value="English">English</option>
+                            <option value="Hindi">Hindi</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="French">French</option>
+                            <option value="German">German</option>
+                            <option value="Mandarin">Mandarin</option>
+                            <option value="Arabic">Arabic</option>
+                        </select>
+                    </div>
+
+                    <!-- Preferred Gender -->
+                    <div>
+                        <label class="label">Preferred Gender *</label>
+                        <div style="display: grid; gap: var(--space-12);">
+                            <label
+                                style="display: flex; align-items: center; padding: var(--space-12); background: var(--surface-50); border: 2px solid var(--surface-200); border-radius: var(--radius-md); cursor: pointer;">
+                                <input type="radio" name="gender" value="Any" style="margin-right: var(--space-12);"
+                                    required>
+                                <span>Any</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; padding: var(--space-12); background: var(--surface-50); border: 2px solid var(--surface-200); border-radius: var(--radius-md); cursor: pointer;">
+                                <input type="radio" name="gender" value="Male" style="margin-right: var(--space-12);">
+                                <span>Male</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; padding: var(--space-12); background: var(--surface-50); border: 2px solid var(--surface-200); border-radius: var(--radius-md); cursor: pointer;">
+                                <input type="radio" name="gender" value="Female" style="margin-right: var(--space-12);">
+                                <span>Female</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; padding: var(--space-12); background: var(--surface-50); border: 2px solid var(--surface-200); border-radius: var(--radius-md); cursor: pointer;">
+                                <input type="radio" name="gender" value="Non-binary"
+                                    style="margin-right: var(--space-12);">
+                                <span>Non-binary</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary btn-nav" id="backBtn4">Back</button>
+                    <button class="btn btn-primary btn-nav" id="nextBtn4" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Optional Details -->
+            <div class="step-container" id="step5">
+                <h2 class="step-title">Complete your profile</h2>
+                <p class="step-description">Add optional details to personalize your profile. These fields are not
+                    required.</p>
+
+                <div id="finalContent">
+                    <!-- Bio -->
+                    <div style="margin-bottom: var(--space-24);">
+                        <label class="label">Short Bio (Optional)</label>
+                        <textarea class="textarea" id="bio" rows="4" maxlength="500"
+                            placeholder="Tell us a bit about yourself... (max 500 characters)"></textarea>
+                        <div
+                            style="text-align: right; font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--space-8);">
+                            <span id="bioCount">0</span>/500
+                        </div>
+                    </div>
+
+                    <!-- Profile Photo -->
+                    <div>
+                        <label class="label">Profile Photo (Optional)</label>
+                        <input type="file" id="photoUpload" accept="image/*" style="display: none;">
+                        <button type="button" class="btn btn-secondary" id="uploadPhotoBtn" style="width: 100%;">
+                            📷 Upload Photo
+                        </button>
+                        <div id="photoPreview" style="margin-top: var(--space-16); display: none;">
+                            <img id="previewImg"
+                                style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-500);">
+                        </div>
+                    </div>
+
+                    <!-- Summary -->
+                    <div
+                        style="margin-top: var(--space-32); padding: var(--space-24); background: var(--surface-50); border-radius: var(--radius-md); border: 1px solid var(--surface-200);">
+                        <h3
+                            style="font-size: var(--text-lg); margin-bottom: var(--space-16); color: var(--base-white);">
+                            🎉 You're all set!
+                        </h3>
+                        <p style="color: var(--text-description); font-size: var(--text-sm);">
+                            Click "Complete Setup" to finish your profile and start discovering groups near you.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary btn-nav" id="backBtn5">Back</button>
+                    <button class="btn btn-primary btn-nav" id="completeBtn">Complete Setup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase services
+        import { profileSetupIntegration } from '../js/profile-setup-integration.js';
+        import { auth } from '../js/firebase-config.js';
+
+        // Wait for authentication
+        let isFirebaseReady = false;
+        let currentUser = null;
+
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                console.warn('⚠️ No authenticated user, redirecting to login...');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            currentUser = user;
+            console.log('✅ User authenticated:', user.email);
+
+            // Initialize Firebase integration
+            try {
+                const startStep = await profileSetupIntegration.init();
+
+                // Resume from last step if applicable
+                if (startStep > 1 && startStep <= 5) {
+                    console.log(`📍 Resuming from step ${startStep}`);
+                    currentStep = startStep;
+                    updateProgress();
+                }
+
+                isFirebaseReady = true;
+                console.log('✅ Firebase integration ready');
+            } catch (error) {
+                console.error('❌ Firebase initialization error:', error);
+                alert('Failed to initialize profile setup. Please refresh the page.');
+            }
+        });
+
+        // Available Interests
+        const availableInterests = [
+            'Sports', 'Music', 'Coding', 'Fitness', 'Board Games', 'Volunteering',
+            'Reading', 'Photography', 'Cooking', 'Travel', 'Art', 'Gaming',
+            'Dance', 'Yoga', 'Meditation', 'Hiking', 'Cycling', 'Swimming',
+            'Running', 'Basketball', 'Football', 'Tennis', 'Badminton', 'Cricket'
+        ];
+
+        // Profile Setup State
+        let currentStep = 1;
+        const totalSteps = 5;
+        let profileData = {
+            interests: {}, // { 'Sports': 'Beginner', 'Music': 'Intermediate', ... }
+            availability: {
+                days: [],
+                timeSlots: [],
+                customTimeRange: { from: '', to: '' },
+                recurring: true
+            },
+            location: {
+                coords: null,
+                address: '',
+                pinCode: '',
+                city: '',
+                state: ''
+            },
+            preferences: {
+                radius: 5,
+                language: '',
+                gender: ''
+            },
+            bio: '',
+            photo: null
+        };
+
+        // Initialize Interests Grid
+        function initInterestsGrid() {
+            const grid = document.getElementById('interestsGrid');
+            grid.innerHTML = '';
+
+            availableInterests.forEach(interest => {
+                const chip = document.createElement('div');
+                chip.className = 'interest-chip';
+                chip.textContent = interest;
+                chip.dataset.interest = interest;
+                chip.addEventListener('click', () => toggleInterest(interest, chip));
+                grid.appendChild(chip);
+            });
+        }
+
+        // Initialize Weekday Chips
+        function initWeekdayChips() {
+            const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const container = document.getElementById('weekdayChips');
+            container.innerHTML = '';
+
+            weekdays.forEach(day => {
+                const chip = document.createElement('div');
+                chip.className = 'weekday-chip';
+                chip.textContent = day;
+                chip.dataset.day = day;
+                chip.addEventListener('click', () => toggleWeekday(day, chip));
+                container.appendChild(chip);
+            });
+        }
+
+        // Initialize Time Slots
+        function initTimeSlots() {
+            const timeSlots = [
+                { label: 'Morning', time: '6 AM - 12 PM' },
+                { label: 'Afternoon', time: '12 PM - 6 PM' },
+                { label: 'Evening', time: '6 PM - 12 AM' }
+            ];
+            const container = document.getElementById('timeSlots');
+            container.innerHTML = '';
+
+            timeSlots.forEach(slot => {
+                const chip = document.createElement('div');
+                chip.className = 'time-slot-chip';
+                chip.dataset.slot = slot.label;
+                chip.innerHTML = `
+                    <span class="time-slot-label">${slot.label}</span>
+                    <span class="time-slot-time">${slot.time}</span>
+                `;
+                chip.addEventListener('click', () => toggleTimeSlot(slot.label, chip));
+                container.appendChild(chip);
+            });
+        }
+
+        // Initialize Recurring Toggle
+        function initRecurringToggle() {
+            const toggle = document.getElementById('recurringToggle');
+            const description = document.getElementById('recurringDescription');
+
+            toggle.addEventListener('change', () => {
+                profileData.availability.recurring = toggle.checked;
+                description.textContent = toggle.checked
+                    ? 'This availability repeats every week'
+                    : 'This availability is only for now';
+            });
+        }
+
+        // Initialize Custom Time Range Inputs
+        function initCustomTimeInputs() {
+            const customTimeFrom = document.getElementById('customTimeFrom');
+            const customTimeTo = document.getElementById('customTimeTo');
+            const fromAM = document.getElementById('fromAM');
+            const fromPM = document.getElementById('fromPM');
+            const toAM = document.getElementById('toAM');
+            const toPM = document.getElementById('toPM');
+
+            let fromPeriod = 'AM';
+            let toPeriod = 'AM';
+
+            // Format time input as HH:MM
+            function formatTimeInput(input) {
+                let value = input.value.replace(/[^0-9]/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + ':' + value.slice(2, 4);
+                }
+                input.value = value;
+            }
+
+            // Validate time format
+            function isValidTime(time) {
+                const regex = /^([0-9]{1,2}):([0-9]{2})$/;
+                const match = time.match(regex);
+                if (!match) return false;
+                const hours = parseInt(match[1]);
+                const minutes = parseInt(match[2]);
+                return hours >= 1 && hours <= 12 && minutes >= 0 && minutes <= 59;
+            }
+
+            // Toggle AM/PM buttons
+            function togglePeriod(type, period) {
+                if (type === 'from') {
+                    fromPeriod = period;
+                    if (period === 'AM') {
+                        fromAM.style.background = 'var(--primary-500)';
+                        fromAM.style.color = 'var(--base-white)';
+                        fromPM.style.background = 'var(--surface-200)';
+                        fromPM.style.color = 'var(--text-muted)';
+                    } else {
+                        fromPM.style.background = 'var(--primary-500)';
+                        fromPM.style.color = 'var(--base-white)';
+                        fromAM.style.background = 'var(--surface-200)';
+                        fromAM.style.color = 'var(--text-muted)';
+                    }
+                } else {
+                    toPeriod = period;
+                    if (period === 'AM') {
+                        toAM.style.background = 'var(--primary-500)';
+                        toAM.style.color = 'var(--base-white)';
+                        toPM.style.background = 'var(--surface-200)';
+                        toPM.style.color = 'var(--text-muted)';
+                    } else {
+                        toPM.style.background = 'var(--primary-500)';
+                        toPM.style.color = 'var(--base-white)';
+                        toAM.style.background = 'var(--surface-200)';
+                        toAM.style.color = 'var(--text-muted)';
+                    }
+                }
+                handleCustomTimeChange();
+            }
+
+            function handleCustomTimeChange() {
+                const hasCustomTime = customTimeFrom.value && customTimeTo.value &&
+                    isValidTime(customTimeFrom.value) && isValidTime(customTimeTo.value);
+
+                if (hasCustomTime) {
+                    // Disable and dim time slots
+                    const allChips = document.querySelectorAll('.time-slot-chip');
+                    allChips.forEach(chip => {
+                        chip.classList.remove('selected');
+                        chip.style.opacity = '0.5';
+                        chip.style.pointerEvents = 'none';
+                    });
+
+                    // Clear time slots from profileData
+                    profileData.availability.timeSlots = [];
+
+                    // Store custom time with period
+                    profileData.availability.customTimeRange = {
+                        from: customTimeFrom.value + ' ' + fromPeriod,
+                        to: customTimeTo.value + ' ' + toPeriod
+                    };
+                } else {
+                    // Re-enable time slots if custom time is cleared
+                    const allChips = document.querySelectorAll('.time-slot-chip');
+                    allChips.forEach(chip => {
+                        chip.style.opacity = '1';
+                        chip.style.pointerEvents = 'auto';
+                    });
+
+                    profileData.availability.customTimeRange = { from: '', to: '' };
+                }
+
+                validateStep2();
+            }
+
+            // Event listeners for time inputs
+            customTimeFrom.addEventListener('input', () => {
+                formatTimeInput(customTimeFrom);
+                handleCustomTimeChange();
+            });
+
+            customTimeTo.addEventListener('input', () => {
+                formatTimeInput(customTimeTo);
+                handleCustomTimeChange();
+            });
+
+            // Event listeners for AM/PM buttons
+            fromAM.addEventListener('click', () => togglePeriod('from', 'AM'));
+            fromPM.addEventListener('click', () => togglePeriod('from', 'PM'));
+            toAM.addEventListener('click', () => togglePeriod('to', 'AM'));
+            toPM.addEventListener('click', () => togglePeriod('to', 'PM'));
+
+            // Initialize AM as default
+            togglePeriod('from', 'AM');
+            togglePeriod('to', 'AM');
+        }
+
+        // Toggle Interest Selection
+        function toggleInterest(interest, chipElement) {
+            if (profileData.interests[interest]) {
+                // Deselect
+                delete profileData.interests[interest];
+                chipElement.classList.remove('selected');
+            } else {
+                // Select with default skill level
+                profileData.interests[interest] = 'Beginner';
+                chipElement.classList.add('selected');
+            }
+
+            updateSkillLevelSelectors();
+            validateStep1();
+        }
+
+        // Update Skill Level Selectors
+        function updateSkillLevelSelectors() {
+            const section = document.getElementById('selectedInterestsSection');
+            const container = document.getElementById('skillLevelSelectors');
+            const selectedInterests = Object.keys(profileData.interests);
+
+            if (selectedInterests.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            container.innerHTML = '';
+
+            selectedInterests.forEach(interest => {
+                const item = document.createElement('div');
+                item.className = 'skill-level-item';
+
+                const header = document.createElement('div');
+                header.className = 'skill-level-header';
+
+                const name = document.createElement('span');
+                name.className = 'skill-level-name';
+                name.textContent = interest;
+
+                const buttons = document.createElement('div');
+                buttons.className = 'skill-buttons';
+
+                ['Beginner', 'Intermediate', 'Advanced'].forEach(level => {
+                    const btn = document.createElement('button');
+                    btn.className = 'skill-btn';
+                    btn.textContent = level;
+                    btn.type = 'button';
+                    if (profileData.interests[interest] === level) {
+                        btn.classList.add('active');
+                    }
+                    btn.addEventListener('click', () => setSkillLevel(interest, level));
+                    buttons.appendChild(btn);
+                });
+
+                header.appendChild(name);
+                header.appendChild(buttons);
+                item.appendChild(header);
+                container.appendChild(item);
+            });
+        }
+
+        // Set Skill Level
+        function setSkillLevel(interest, level) {
+            profileData.interests[interest] = level;
+            updateSkillLevelSelectors();
+        }
+
+        // Validate Step 1
+        function validateStep1() {
+            const hasInterests = Object.keys(profileData.interests).length > 0;
+            document.getElementById('nextBtn1').disabled = !hasInterests;
+        }
+
+        // Toggle Weekday Selection
+        function toggleWeekday(day, chipElement) {
+            const index = profileData.availability.days.indexOf(day);
+            if (index > -1) {
+                // Deselect
+                profileData.availability.days.splice(index, 1);
+                chipElement.classList.remove('selected');
+            } else {
+                // Select
+                profileData.availability.days.push(day);
+                chipElement.classList.add('selected');
+            }
+            validateStep2();
+        }
+
+        // Toggle Time Slot Selection (Single Choice Only)
+        function toggleTimeSlot(slot, chipElement) {
+            const allChips = document.querySelectorAll('.time-slot-chip');
+            const customTimeFrom = document.getElementById('customTimeFrom');
+            const customTimeTo = document.getElementById('customTimeTo');
+            const customTimeContainer = customTimeFrom.parentElement.parentElement;
+
+            // If clicking the already selected slot, deselect it
+            if (profileData.availability.timeSlots.includes(slot)) {
+                profileData.availability.timeSlots = [];
+                chipElement.classList.remove('selected');
+
+                // Re-enable custom time inputs
+                customTimeFrom.disabled = false;
+                customTimeTo.disabled = false;
+                customTimeContainer.style.opacity = '1';
+                customTimeContainer.style.pointerEvents = 'auto';
+            } else {
+                // Deselect all other slots (single choice)
+                allChips.forEach(chip => chip.classList.remove('selected'));
+                profileData.availability.timeSlots = [slot];
+                chipElement.classList.add('selected');
+
+                // Disable and dim custom time inputs
+                customTimeFrom.disabled = true;
+                customTimeTo.disabled = true;
+                customTimeFrom.value = '';
+                customTimeTo.value = '';
+                profileData.availability.customTimeRange = { from: '', to: '' };
+                customTimeContainer.style.opacity = '0.5';
+                customTimeContainer.style.pointerEvents = 'none';
+            }
+
+            validateStep2();
+        }
+
+        // Validate Step 2
+        function validateStep2() {
+            const hasDays = profileData.availability.days.length > 0;
+            const hasTimeSlots = profileData.availability.timeSlots.length > 0;
+            const hasCustomTime = profileData.availability.customTimeRange.from && profileData.availability.customTimeRange.to;
+
+            // Enable next if user has selected days AND (time slots OR custom time range)
+            document.getElementById('nextBtn2').disabled = !(hasDays && (hasTimeSlots || hasCustomTime));
+        }
+
+        // Initialize Step 3 (Location)
+        function initLocationInputs() {
+            const geolocateBtn = document.getElementById('geolocateBtn');
+            const manualFields = document.getElementById('manualLocationFields');
+            const pinCode = document.getElementById('pinCode');
+            const pinCodeError = document.getElementById('pinCodeError');
+            const district = document.getElementById('district');
+            const districtError = document.getElementById('districtError');
+            const state = document.getElementById('state');
+            const stateError = document.getElementById('stateError');
+            const address = document.getElementById('address');
+
+            // Geolocation Handler
+            geolocateBtn.addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    geolocateBtn.textContent = '📍 Getting location...';
+                    geolocateBtn.disabled = true;
+
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            profileData.location.coords = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+                            geolocateBtn.textContent = '✅ Location Captured';
+                            geolocateBtn.classList.remove('btn-primary');
+                            geolocateBtn.classList.add('btn-secondary');
+
+                            // Reduce opacity of manual fields when geolocation is used
+                            manualFields.style.opacity = '0.5';
+                            manualFields.style.pointerEvents = 'none';
+
+                            validateStep3();
+                        },
+                        (error) => {
+                            geolocateBtn.textContent = '❌ Location Access Denied';
+                            geolocateBtn.disabled = false;
+                            alert('Please enable location access or enter manually.');
+                        }
+                    );
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                }
+            });
+
+            // Pin Code Validation with Auto-fill
+            pinCode.addEventListener('input', (e) => {
+                const value = e.target.value;
+                // Remove non-digits
+                e.target.value = value.replace(/\D/g, '');
+
+                profileData.location.pinCode = e.target.value;
+
+                if (e.target.value.length === 6) {
+                    // Validate pin code using the new data structure
+                    if (typeof isValidPinCode !== 'undefined' && isValidPinCode(e.target.value)) {
+                        pinCodeError.style.display = 'none';
+                        pinCode.style.borderColor = 'var(--success-500)';
+
+                        // Auto-fill district and state
+                        if (typeof getLocationByPinCode !== 'undefined') {
+                            const location = getLocationByPinCode(e.target.value);
+                            if (location) {
+                                district.value = location.district;
+                                state.value = location.state;
+                                profileData.location.district = location.district;
+                                profileData.location.state = location.state;
+
+                                // Clear any errors
+                                districtError.style.display = 'none';
+                                stateError.style.display = 'none';
+                                district.style.borderColor = 'var(--success-500)';
+                                state.style.borderColor = 'var(--success-500)';
+                            }
+                        }
+                    } else {
+                        pinCodeError.style.display = 'block';
+                        pinCodeError.textContent = 'Invalid pin code';
+                        pinCode.style.borderColor = 'var(--error-500)';
+
+                        // Clear district and state
+                        district.value = '';
+                        state.value = '';
+                        profileData.location.district = '';
+                        profileData.location.state = '';
+                    }
+                } else if (e.target.value.length > 0) {
+                    pinCodeError.style.display = 'block';
+                    pinCodeError.textContent = 'Pin code must be 6 digits';
+                    pinCode.style.borderColor = 'var(--warning-500)';
+
+                    // Clear district and state
+                    district.value = '';
+                    state.value = '';
+                    profileData.location.district = '';
+                    profileData.location.state = '';
+                } else {
+                    pinCodeError.style.display = 'none';
+                    pinCode.style.borderColor = '';
+
+                    // Clear district and state
+                    district.value = '';
+                    state.value = '';
+                    profileData.location.district = '';
+                    profileData.location.state = '';
+                }
+
+                validateStep3();
+            });
+
+            // Address (optional)
+            address.addEventListener('input', (e) => {
+                profileData.location.address = e.target.value;
+            });
+        }
+
+        function validateStep3() {
+            const hasGeolocation = profileData.location.coords !== null;
+
+            // Manual location validation
+            const pinCodeValid = /^\d{6}$/.test(profileData.location.pinCode) &&
+                (typeof isValidPinCode === 'undefined' || isValidPinCode(profileData.location.pinCode));
+            const districtValid = profileData.location.district && profileData.location.district.trim().length > 0;
+            const stateValid = profileData.location.state && profileData.location.state.trim().length > 0;
+            const hasManualLocation = pinCodeValid && districtValid && stateValid;
+
+            // Enable Next button if either geolocation OR complete manual location is provided
+            document.getElementById('nextBtn3').disabled = !(hasGeolocation || hasManualLocation);
+        }
+
+
+
+        // Initialize Step 4 (Preferences)
+        function initPreferences() {
+            const radiusSlider = document.getElementById('radiusSlider');
+            const radiusValue = document.getElementById('radiusValue');
+            const language = document.getElementById('language');
+            const genderRadios = document.querySelectorAll('input[name="gender"]');
+
+            radiusSlider.addEventListener('input', () => {
+                profileData.preferences.radius = parseInt(radiusSlider.value);
+                radiusValue.textContent = radiusSlider.value;
+            });
+
+            language.addEventListener('change', () => {
+                profileData.preferences.language = language.value;
+                validateStep4();
+            });
+
+            genderRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    profileData.preferences.gender = radio.value;
+                    validateStep4();
+                });
+            });
+        }
+
+        function validateStep4() {
+            const hasLanguage = profileData.preferences.language !== '';
+            const hasGender = profileData.preferences.gender !== '';
+            document.getElementById('nextBtn4').disabled = !(hasLanguage && hasGender);
+        }
+
+        // Initialize Step 5 (Optional Details)
+        function initOptionalDetails() {
+            const bio = document.getElementById('bio');
+            const bioCount = document.getElementById('bioCount');
+            const uploadPhotoBtn = document.getElementById('uploadPhotoBtn');
+            const photoUpload = document.getElementById('photoUpload');
+            const photoPreview = document.getElementById('photoPreview');
+            const previewImg = document.getElementById('previewImg');
+
+            bio.addEventListener('input', () => {
+                profileData.bio = bio.value;
+                bioCount.textContent = bio.value.length;
+            });
+
+            uploadPhotoBtn.addEventListener('click', () => {
+                photoUpload.click();
+            });
+
+            photoUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        profileData.photo = event.target.result;
+                        previewImg.src = event.target.result;
+                        photoPreview.style.display = 'block';
+                        uploadPhotoBtn.textContent = '✅ Photo Uploaded';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Navigation Functions
+        function updateProgress() {
+            const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progressLineFill').style.width = progressPercent + '%';
+            document.getElementById('currentStepNum').textContent = currentStep;
+
+            // Update step indicators
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                const stepNum = index + 1;
+                step.classList.remove('active', 'completed');
+
+                if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                    step.querySelector('.step-circle').innerHTML = '✓';
+                } else if (stepNum === currentStep) {
+                    step.classList.add('active');
+                    step.querySelector('.step-circle').innerHTML = stepNum;
+                } else {
+                    step.querySelector('.step-circle').innerHTML = stepNum;
+                }
+            });
+
+            // Show/hide step containers
+            document.querySelectorAll('.step-container').forEach((container, index) => {
+                container.classList.toggle('active', index + 1 === currentStep);
+            });
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Event Listeners with Firebase Integration
+
+        // Step 1 -> Step 2: Save Interests
+        document.getElementById('nextBtn1').addEventListener('click', async () => {
+            const button = document.getElementById('nextBtn1');
+
+            if (!isFirebaseReady) {
+                console.warn('⚠️ Firebase not ready yet');
+                return;
+            }
+
+            // Convert interests object to array for Firestore
+            const interestsArray = Object.keys(profileData.interests);
+
+            profileSetupIntegration.setButtonLoading(button, true);
+            const success = await profileSetupIntegration.saveStep1(interestsArray);
+            profileSetupIntegration.setButtonLoading(button, false);
+
+            if (success) {
+                nextStep();
+            }
+        });
+
+        // Step 2 -> Step 3: Save Availability
+        document.getElementById('nextBtn2').addEventListener('click', async () => {
+            const button = document.getElementById('nextBtn2');
+
+            if (!isFirebaseReady) {
+                console.warn('⚠️ Firebase not ready yet');
+                return;
+            }
+
+            // Format availability data
+            const availabilityData = profileData.availability.days.map(day => ({
+                day: day,
+                slots: profileData.availability.timeSlots
+            }));
+
+            profileSetupIntegration.setButtonLoading(button, true);
+            const success = await profileSetupIntegration.saveStep2(availabilityData);
+            profileSetupIntegration.setButtonLoading(button, false);
+
+            if (success) {
+                nextStep();
+            }
+        });
+
+        // Step 3 -> Step 4: Save Location
+        document.getElementById('nextBtn3').addEventListener('click', async () => {
+            const button = document.getElementById('nextBtn3');
+
+            if (!isFirebaseReady) {
+                console.warn('⚠️ Firebase not ready yet');
+                return;
+            }
+
+            profileSetupIntegration.setButtonLoading(button, true);
+            const success = await profileSetupIntegration.saveStep3(profileData.location);
+            profileSetupIntegration.setButtonLoading(button, false);
+
+            if (success) {
+                nextStep();
+            }
+        });
+
+        // Step 4 -> Step 5: Save Preferences
+        document.getElementById('nextBtn4').addEventListener('click', async () => {
+            const button = document.getElementById('nextBtn4');
+
+            if (!isFirebaseReady) {
+                console.warn('⚠️ Firebase not ready yet');
+                return;
+            }
+
+            profileSetupIntegration.setButtonLoading(button, true);
+            const success = await profileSetupIntegration.saveStep4(profileData.preferences);
+            profileSetupIntegration.setButtonLoading(button, false);
+
+            if (success) {
+                nextStep();
+            }
+        });
+
+        // Back buttons (no Firebase calls needed)
+        document.getElementById('backBtn2').addEventListener('click', prevStep);
+        document.getElementById('backBtn3').addEventListener('click', prevStep);
+        document.getElementById('backBtn4').addEventListener('click', prevStep);
+        document.getElementById('backBtn5').addEventListener('click', prevStep);
+
+        // Complete Button: Save Bio & Photo, Mark Profile Complete
+        document.getElementById('completeBtn').addEventListener('click', async () => {
+            const button = document.getElementById('completeBtn');
+
+            if (!isFirebaseReady) {
+                console.warn('⚠️ Firebase not ready yet');
+                return;
+            }
+
+            // Get photo file if uploaded
+            const photoInput = document.getElementById('photoUpload');
+            const photoFile = photoInput?.files[0] || null;
+
+            profileSetupIntegration.setButtonLoading(button, true);
+
+            const success = await profileSetupIntegration.saveStep5(
+                profileData.bio,
+                photoFile,
+                (progress) => {
+                    console.log(`📤 Upload progress: ${progress.toFixed(1)}%`);
+                    // Optional: Update button text with progress
+                    button.textContent = `Uploading... ${progress.toFixed(0)}%`;
+                }
+            );
+
+            profileSetupIntegration.setButtonLoading(button, false);
+
+            if (success) {
+                console.log('✅ Profile setup complete!');
+                alert('🎉 Profile setup complete!\n\nYou will now be redirected to the dashboard.');
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        // Initialize
+        initInterestsGrid();
+        initWeekdayChips();
+        initTimeSlots();
+        initRecurringToggle();
+        initCustomTimeInputs();
+        initLocationInputs();
+        initPreferences();
+        initOptionalDetails();
+        updateProgress();
+    </script>
+    <script src="../indian_pincode_data.js"></script>
+</body>
+
+</html>

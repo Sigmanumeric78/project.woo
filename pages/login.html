@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | ECA-Connect</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+
+<body
+    style="height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--surface-50);">
+
+    <div
+        style="width: 100%; max-width: 400px; background: var(--surface-100); padding: var(--space-32); border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+        <h2 style="text-align: center; margin-bottom: var(--space-24);">Welcome Back</h2>
+
+        <!-- Error Message -->
+        <div id="error-message"
+            style="display: none; padding: 12px; background: #fee; border: 1px solid #fcc; border-radius: 8px; margin-bottom: 16px; color: #c33;">
+        </div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label class="label">Email</label>
+                <input id="email" type="email" class="input" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+                <label class="label">Password</label>
+                <input id="password" type="password" class="input" placeholder="••••••••" required>
+            </div>
+
+            <button id="login-btn" type="submit" class="btn btn-primary"
+                style="width: 100%; margin-top: var(--space-8);">
+                Log In
+            </button>
+
+            <div style="text-align: center; margin: 16px 0; color: var(--text-muted);">or</div>
+
+            <button id="google-btn" type="button" class="btn btn-google"
+                style="margin-top: var(--space-8); justify-content: center;">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
+                    style="width: 20px; height: 20px; margin-right: 8px;">
+                Continue with Google
+            </button>
+        </form>
+
+        <p class="text-muted" style="text-align: center; margin-top: var(--space-24); font-size: var(--text-sm);">
+            Don't have an account? <a href="signup.html" style="color: var(--primary-600);">Sign up</a>
+        </p>
+    </div>
+
+    <!-- Firebase Authentication Integration -->
+    <script type="module">
+        import { authService } from '../js/auth-service.js';
+        import { redirectIfAuthenticated } from '../js/route-guard.js';
+
+        const form = document.getElementById('login-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('login-btn');
+        const googleBtn = document.getElementById('google-btn');
+        const errorMessage = document.getElementById('error-message');
+
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Set loading state
+        function setLoading(isLoading, button) {
+            if (isLoading) {
+                button.disabled = true;
+                button.dataset.originalText = button.textContent;
+                button.textContent = 'Loading...';
+            } else {
+                button.disabled = false;
+                button.textContent = button.dataset.originalText;
+            }
+        }
+
+        // Email/Password Login
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.style.display = 'none';
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            setLoading(true, loginBtn);
+
+            const result = await authService.loginWithEmail(email, password);
+
+            if (result.success) {
+                const profile = await authService.loadUserProfile(result.user.uid);
+
+                // Redirect based on profile completion
+                if (profile && profile.profileComplete) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    window.location.href = 'profile-setup.html';
+                }
+            } else {
+                setLoading(false, loginBtn);
+                showError(result.error);
+            }
+        });
+
+        // Google OAuth Login
+        googleBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            errorMessage.style.display = 'none';
+
+            setLoading(true, googleBtn);
+
+            const result = await authService.loginWithGoogle();
+
+            if (result.success) {
+                const profile = await authService.loadUserProfile(result.user.uid);
+
+                // Redirect based on profile completion
+                if (profile && profile.profileComplete) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    window.location.href = 'profile-setup.html';
+                }
+            } else {
+                setLoading(false, googleBtn);
+                if (result.error !== 'Login cancelled') {
+                    showError(result.error);
+                }
+            }
+        });
+
+        // Check if already authenticated
+        redirectIfAuthenticated();
+    </script>
+
+</body>
+
+</html>
