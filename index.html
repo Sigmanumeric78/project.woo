@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ECA-Connect | Connect via Real-World Availability</title>
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +26,7 @@
                 style="font-family: var(--font-headings); font-weight: 700; font-size: var(--text-h3); color: var(--base-white);">
                 ECA-Connect
             </div>
-            <!-- Nav buttons removed as requested -->
+            <button id="dark-mode-toggle">🌙 Dark Mode</button>
         </div>
     </nav>
 
@@ -73,5 +75,10 @@
         &copy; 2024 ECA-Connect. All rights reserved.
     </footer>
 </body>
+
+<script type="module">
+    import { initDarkModeToggle } from './js/dark-mode.js';
+    initDarkModeToggle();
+</script>
 
 </html>

@@ -1,77 +1,71 @@
 /* ECA-CONNECT MASTER STYLESHEET
-  Version: 1.2 - Accessibility Refined
-  Description: Enhanced Dark Theme with Optimized Contrast & Visual Hierarchy
+  Version: 2.0 - White / Dark Blue / Sky Blue Theme + Dark Mode
+  Description: Clean light mode with navy & sky-blue accents; charcoal dark mode.
 */
 
+/* ============================================================
+   LIGHT MODE (DEFAULT)
+   Palette: White backgrounds | Dark Navy text | Sky Blue actions
+   ============================================================ */
 :root {
-    /* --- DARK BACKGROUNDS (Green Shades) - Enhanced Elevation --- */
-    --base-black: #00221B;
-    /* Deepest Forest - Page Background */
-    --surface-50: #033829;
-    /* Section Backgrounds - Brightened for clarity */
-    --surface-100: #054433;
-    /* Card Backgrounds - More distinct step up */
-    --surface-200: #0A5240;
-    /* Borders / Dividers - More visible */
-    --surface-300: #106049;
-    /* Hover states - Clear visual feedback */
+    /* --- BACKGROUNDS --- */
+    --base-black: #FFFFFF;
+    /* Page background  */
+    --surface-50: #F0F4FA;
+    /* Section backgrounds */
+    --surface-100: #E4EBF5;
+    /* Card backgrounds */
+    --surface-200: #C8D6EA;
+    /* Borders / dividers */
+    --surface-300: #A8BDD8;
+    /* Hover / emphasis borders */
 
-    /* --- LIGHT ACCENTS (Cream / Off-white) - Enhanced Contrast --- */
-    --base-white: #E8E7D5;
-    /* Main Text Color - Brighter for 7:1 contrast */
-    --text-muted: #A8C589;
-    /* Subdued labels - Improved from 2.8:1 to 5.2:1 contrast */
-    --text-description: #D4E5E1;
-    /* Body text - Enhanced readability */
+    /* --- TEXT --- */
+    --base-white: #0C1A3A;
+    /* Primary text (dark navy) */
+    --text-muted: #4A6080;
+    /* Muted labels */
+    --text-description: #2D4060;
+    /* Body / description text */
 
-    /* --- ACTION COLORS (Blue Shades) - Vibrant & Distinct --- */
-    --primary-500: #3DB5E5;
-    /* Primary Action - Brighter, more vibrant */
-    --primary-600: #5CC4ED;
-    /* Hover Action - Lighter for clear hover feedback */
-    --primary-700: #2A9FCB;
-    /* Active state - Darker for pressed effect */
-    --primary-50: rgba(61, 181, 229, 0.20);
-    /* Focus halo - Increased opacity */
+    /* --- PRIMARY ACTION (Sky Blue) --- */
+    --primary-500: #0096D6;
+    /* Main action */
+    --primary-600: #38B6FF;
+    /* Hover - lighter sky blue */
+    --primary-700: #0078AC;
+    /* Active / pressed */
+    --primary-50: rgba(0, 150, 214, 0.12);
+    /* Focus halo */
+    --primary-200: rgba(0, 150, 214, 0.25);
 
-    /* --- SUCCESS & MATCHING (Lime/Olive Shades) - Enhanced --- */
-    --secondary-500: #8DB350;
-    /* Success - Brightened for better visibility */
-    --match-perfect: #8DB350;
-    --match-near: #5CC4ED;
-    /* Aligned with primary-600 for consistency */
-    --match-low: #A3B5C8;
-    /* Improved contrast for low matches */
+    /* --- SUCCESS & MATCHING --- */
+    --secondary-500: #2BB36A;
+    /* Success green */
+    --match-perfect: #2BB36A;
+    --match-near: #38B6FF;
+    --match-low: #7A9BBF;
 
-    /* --- SEMANTIC STATES - High Contrast --- */
-    --success-bg: #0A5240;
-    --success-text: #8DB350;
-    --success-50: rgba(141, 179, 80, 0.15);
-    --success-200: rgba(141, 179, 80, 0.3);
-    --success-700: #8DB350;
+    /* --- SEMANTIC STATES --- */
+    --success-bg: #E6F7EE;
+    --success-text: #1A7A45;
+    --success-50: rgba(43, 179, 106, 0.12);
+    --success-200: rgba(43, 179, 106, 0.25);
+    --success-700: #1A7A45;
 
-    --warning-bg: #4A6B6B;
-    /* Lightened for better text contrast */
-    --warning-text: #A8D5F0;
-    /* Brighter blue for warnings */
+    --warning-bg: #FFF8E6;
+    --warning-text: #A05A00;
 
-    --error-bg: #4D1919;
-    /* Lightened slightly */
-    --error-text: #FF8585;
-    /* Softer red with better contrast */
-    --error-50: rgba(255, 133, 133, 0.15);
-    --error-200: rgba(255, 133, 133, 0.3);
-    --error-700: #FF8585;
+    --error-bg: #FEE8E8;
+    --error-text: #C0393B;
+    --error-50: rgba(192, 57, 59, 0.12);
+    --error-200: rgba(192, 57, 59, 0.25);
+    --error-700: #C0393B;
 
-    --info-bg: #033829;
-    --info-text: #8DC9E0;
-    /* Brighter info blue */
+    --info-bg: #E6F3FB;
+    --info-text: #0C6AA6;
 
-    --primary-50: rgba(61, 181, 229, 0.15);
-    --primary-200: rgba(61, 181, 229, 0.3);
-    --primary-700: #2A9FCB;
-
-    /* --- TYPOGRAPHY SYSTEM --- */
+    /* --- TYPOGRAPHY --- */
     --font-headings: 'Montserrat', sans-serif;
     --font-body: 'Roboto', sans-serif;
 
@@ -102,11 +96,71 @@
     --radius-lg: 16px;
     --radius-full: 999px;
 
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 1px 3px rgba(12, 26, 58, 0.10);
+    --shadow-md: 0 4px 12px rgba(12, 26, 58, 0.12);
+    --shadow-lg: 0 10px 24px rgba(12, 26, 58, 0.15);
     --shadow-focus: 0 0 0 4px var(--primary-50);
-    /* Enhanced focus ring */
+}
+
+/* ============================================================
+   DARK MODE
+   Palette: Dark grey backgrounds | Dark Navy tint | Light Blue accents
+   Activated by adding class="dark" to <html>
+   ============================================================ */
+html.dark {
+    --base-black: #14172B;
+    /* Deepest page background (dark grey/navy) */
+    --surface-50: #1C2038;
+    /* Section backgrounds */
+    --surface-100: #242845;
+    /* Card backgrounds */
+    --surface-200: #2E3350;
+    /* Borders / dividers */
+    --surface-300: #3A4060;
+    /* Hover borders */
+
+    --base-white: #C8DAEF;
+    /* Primary text (light blue-grey) */
+    --text-muted: #7A9BBF;
+    /* Muted labels */
+    --text-description: #A0BCE0;
+    /* Body text */
+
+    --primary-500: #38B6FF;
+    /* Sky blue - primary action */
+    --primary-600: #6CCBFF;
+    /* Hover - lighter */
+    --primary-700: #0096D6;
+    /* Active */
+    --primary-50: rgba(56, 182, 255, 0.15);
+    --primary-200: rgba(56, 182, 255, 0.28);
+
+    --secondary-500: #3DD68C;
+    --match-perfect: #3DD68C;
+    --match-near: #6CCBFF;
+    --match-low: #6B82A0;
+
+    --success-bg: #0D2B1E;
+    --success-text: #3DD68C;
+    --success-50: rgba(61, 214, 140, 0.12);
+    --success-200: rgba(61, 214, 140, 0.25);
+    --success-700: #3DD68C;
+
+    --warning-bg: #2B2200;
+    --warning-text: #FFCC66;
+
+    --error-bg: #2B0D0D;
+    --error-text: #FF7878;
+    --error-50: rgba(255, 120, 120, 0.12);
+    --error-200: rgba(255, 120, 120, 0.25);
+    --error-700: #FF7878;
+
+    --info-bg: #0D1E30;
+    --info-text: #6CCBFF;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.6);
 }
 
 /* --- GLOBAL RESET --- */
@@ -126,6 +180,30 @@ body {
     margin: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- DARK MODE TOGGLE BUTTON --- */
+#dark-mode-toggle {
+    background: var(--surface-100);
+    border: 1.5px solid var(--surface-200);
+    color: var(--base-white);
+    border-radius: var(--radius-full);
+    padding: 6px 14px;
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+#dark-mode-toggle:hover {
+    background: var(--surface-200);
+    border-color: var(--primary-500);
+    color: var(--primary-500);
 }
 
 h1,
@@ -801,9 +879,14 @@ input:focus-visible+.slider {
 /* High contrast mode support */
 @media (prefers-contrast: high) {
     :root {
+        --base-white: #000000;
+        --surface-200: #B0C4DE;
+        --primary-500: #0050A0;
+    }
+
+    html.dark {
         --base-white: #FFFFFF;
-        --surface-200: #0F5C47;
-        --primary-500: #5CCCFF;
+        --primary-500: #80CFFF;
     }
 
     .btn,

@@ -1,10 +1,33 @@
 {
   "hosting": {
-    "public": "public",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "firestore.rules",
+      "firestore.indexes.json",
+      "**/*.py",
+      "All_India_pincode_NO_GEOMETRY.json",
+      "public/**",
+      "README.md"
+    ],
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/pages/login.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, must-revalidate"
+          }
+        ]
+      }
     ]
   },
   "firestore": {
@@ -12,14 +35,5 @@
     "location": "asia-south1",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
-  },
-  "auth": {
-    "providers": {
-      "emailPassword": true,
-      "googleSignIn": {
-        "oAuthBrandDisplayName": "My App",
-        "supportEmail": "support@undefined.firebaseapp.com"
-      }
-    }
   }
 }

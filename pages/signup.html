@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | ECA-Connect</title>
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -255,5 +257,15 @@
     </script>
 
 </body>
+
+<script type="module">
+    import { initDarkModeToggle } from '../js/dark-mode.js';
+    const btn = document.createElement('button');
+    btn.id = 'dark-mode-toggle';
+    btn.textContent = '🌙 Dark Mode';
+    btn.style.cssText = 'position:fixed;top:16px;right:16px;z-index:999;';
+    document.body.appendChild(btn);
+    initDarkModeToggle();
+</script>
 
 </html>

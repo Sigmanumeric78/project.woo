@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | ECA-Connect</title>
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
     <!-- Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
@@ -153,6 +155,7 @@
                 ECA-Connect</div>
 
             <div class="user-menu" style="display: flex; align-items: center; gap: var(--space-16); margin-left: auto;">
+                <button id="dark-mode-toggle">🌙 Dark Mode</button>
                 <a href="profile.html" style="text-decoration: none;">
                     <div class="avatar avatar-s">JD</div>
                 </a>
@@ -439,5 +442,10 @@
     </div>
 
 </body>
+
+<script type="module">
+    import { initDarkModeToggle } from '../js/dark-mode.js';
+    initDarkModeToggle();
+</script>
 
 </html>
