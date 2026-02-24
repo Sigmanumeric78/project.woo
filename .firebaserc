@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "ecaconnect-7c652"
-  }
+    "default": "ecaconnect-7c652",
+    "spaces": "social-spaces-9636b"
+  },
+  "targets": {},
+  "etags": {}
 }
