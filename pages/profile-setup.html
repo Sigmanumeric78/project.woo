@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Setup | ECA-Connect</title>
+    <title>Profile Setup | SocialSpaces</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -760,18 +760,7 @@
                         </div>
                     </div>
 
-                    <!-- Profile Photo -->
-                    <div>
-                        <label class="label">Profile Photo (Optional)</label>
-                        <input type="file" id="photoUpload" accept="image/*" style="display: none;">
-                        <button type="button" class="btn btn-secondary" id="uploadPhotoBtn" style="width: 100%;">
-                            📷 Upload Photo
-                        </button>
-                        <div id="photoPreview" style="margin-top: var(--space-16); display: none;">
-                            <img id="previewImg"
-                                style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-500);">
-                        </div>
-                    </div>
+
 
                     <!-- Summary -->
                     <div
@@ -863,8 +852,7 @@
                 language: '',
                 gender: ''
             },
-            bio: '',
-            photo: null
+            bio: ''
         };
 
         // Initialize Interests Grid
@@ -1357,32 +1345,10 @@
         function initOptionalDetails() {
             const bio = document.getElementById('bio');
             const bioCount = document.getElementById('bioCount');
-            const uploadPhotoBtn = document.getElementById('uploadPhotoBtn');
-            const photoUpload = document.getElementById('photoUpload');
-            const photoPreview = document.getElementById('photoPreview');
-            const previewImg = document.getElementById('previewImg');
 
             bio.addEventListener('input', () => {
                 profileData.bio = bio.value;
                 bioCount.textContent = bio.value.length;
-            });
-
-            uploadPhotoBtn.addEventListener('click', () => {
-                photoUpload.click();
-            });
-
-            photoUpload.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        profileData.photo = event.target.result;
-                        previewImg.src = event.target.result;
-                        photoPreview.style.display = 'block';
-                        uploadPhotoBtn.textContent = '✅ Photo Uploaded';
-                    };
-                    reader.readAsDataURL(file);
-                }
             });
         }
 
@@ -1519,7 +1485,7 @@
         document.getElementById('backBtn4').addEventListener('click', prevStep);
         document.getElementById('backBtn5').addEventListener('click', prevStep);
 
-        // Complete Button: Save Bio & Photo, Mark Profile Complete
+        // Complete Button: Save Bio, Mark Profile Complete
         document.getElementById('completeBtn').addEventListener('click', async () => {
             const button = document.getElementById('completeBtn');
 
@@ -1528,21 +1494,9 @@
                 return;
             }
 
-            // Get photo file if uploaded
-            const photoInput = document.getElementById('photoUpload');
-            const photoFile = photoInput?.files[0] || null;
-
             profileSetupIntegration.setButtonLoading(button, true);
 
-            const success = await profileSetupIntegration.saveStep5(
-                profileData.bio,
-                photoFile,
-                (progress) => {
-                    console.log(`📤 Upload progress: ${progress.toFixed(1)}%`);
-                    // Optional: Update button text with progress
-                    button.textContent = `Uploading... ${progress.toFixed(0)}%`;
-                }
-            );
+            const success = await profileSetupIntegration.saveStep5(profileData.bio);
 
             profileSetupIntegration.setButtonLoading(button, false);
 

@@ -43,10 +43,10 @@ export function updateToggleButton() {
     const btn = document.getElementById('dark-mode-toggle');
     if (!btn) return;
     const dark = isDarkMode();
-    // Label shows where you are, icon shows where you can go
+    // Label shows current mode: moon = dark mode, sun = light mode
     btn.innerHTML = dark
-        ? '☀️ Switch to Light'
-        : '🌙 Switch to Dark';
+        ? '🌙 Dark Mode'
+        : '☀️ Light Mode';
 }
 
 export function initDarkModeToggle() {

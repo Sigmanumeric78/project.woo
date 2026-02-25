@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile | ECA-Connect</title>
+    <title>My Profile | SocialSpaces</title>
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -307,11 +309,11 @@
         <div class="nav-container"
             style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 72px;">
             <div class="logo"
-                style="font-family: 'Clash Display', sans-serif; font-weight: 700; font-size: 24px; color: var(--base-white); display: flex; align-items: center; gap: 8px;">
-                ECA-Connect
+                style="font-family: 'Anurati', sans-serif; font-weight: 400; font-size: 24px; color: var(--base-white); display: flex; align-items: center; gap: 8px;">
+                SocialSpaces
             </div>
 
-            <div class="nav-links" style="display: flex; gap: 32px;">
+            <div class="nav-links" style="display: flex; gap: 32px; align-items: center;">
                 <a href="dashboard.html" class="nav-link"
                     style="text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 16px; transition: color 0.2s;">Discover</a>
                 <a href="profile.html" class="nav-link active"
@@ -664,16 +666,6 @@
                         style="width: 100%; padding: 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 8px; color: var(--base-white); font-size: 14px; resize: vertical;"></textarea>
                 </div>
 
-                <!-- Photo Upload -->
-                <div>
-                    <label for="edit-photo"
-                        style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--base-white);">Profile
-                        Photo</label>
-                    <input type="file" id="edit-photo" accept="image/*"
-                        style="width: 100%; padding: 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 8px; color: var(--base-white); font-size: 14px;">
-                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Max 5MB. JPG, PNG, or GIF.
-                    </p>
-                </div>
 
                 <!-- Buttons -->
                 <div style="display: flex; gap: 12px; margin-top: 8px;">
@@ -769,6 +761,80 @@
 
     <!-- Module-based initialization (requires HTTP server) -->
     <script type="module" src="../js/profile-page-init.js"></script>
+
+    <!-- Dark mode: inject button + handle toggle (works on file:// and HTTP) -->
+    <script>
+        (function () {
+            var KEY = 'eca-theme';
+
+            // Read localStorage as ground truth — never check html class
+            function currentTheme() {
+                return localStorage.getItem(KEY) || 'light';
+            }
+
+            function applyLabel(btn) {
+                // Show the CURRENT mode: moon = in dark mode, sun = in light mode
+                btn.textContent = currentTheme() === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode';
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                // Create button from scratch with fully hardcoded styles
+                var btn = document.createElement('button');
+                btn.id = 'dark-mode-toggle';
+                btn.setAttribute('style', [
+                    'display: inline-flex',
+                    'align-items: center',
+                    'gap: 6px',
+                    'padding: 7px 16px',
+                    'font-size: 14px',
+                    'font-weight: 600',
+                    'font-family: inherit',
+                    'cursor: pointer',
+                    'border-radius: 999px',
+                    'border: 2px solid #1E90FF',
+                    'background: transparent',
+                    'color: #1E90FF',
+                    'white-space: nowrap',
+                    'transition: background 0.2s, color 0.2s'
+                ].join('; '));
+
+                applyLabel(btn);
+
+                btn.addEventListener('mouseover', function () {
+                    btn.style.background = '#1E90FF';
+                    btn.style.color = '#ffffff';
+                });
+                btn.addEventListener('mouseout', function () {
+                    btn.style.background = 'transparent';
+                    btn.style.color = '#1E90FF';
+                });
+
+                btn.addEventListener('click', function () {
+                    if (currentTheme() === 'dark') {
+                        // Switch to light
+                        document.documentElement.classList.remove('dark');
+                        document.documentElement.classList.add('light');
+                        localStorage.setItem(KEY, 'light');
+                    } else {
+                        // Switch to dark
+                        document.documentElement.classList.add('dark');
+                        document.documentElement.classList.remove('light');
+                        localStorage.setItem(KEY, 'dark');
+                    }
+                    applyLabel(btn);
+                });
+
+                // Inject button right after the "Profile" nav link
+                var navLinks = document.querySelector('.nav-links');
+                if (navLinks) {
+                    navLinks.appendChild(btn);
+                } else {
+                    var nav = document.querySelector('nav');
+                    if (nav) nav.appendChild(btn);
+                }
+            });
+        })();
+    </script>
 
 </body>
 

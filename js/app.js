@@ -307,7 +307,7 @@ function initGroupDetails() {
     }
 
     // Populate Data
-    document.title = `${group.name} | ECA-Connect`;
+    document.title = `${group.name} | SocialSpaces`;
 
     // Hero
     const hero = document.getElementById('gd-hero-color');
