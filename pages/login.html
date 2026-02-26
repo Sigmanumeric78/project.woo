@@ -12,6 +12,8 @@
         rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/auth.css">
+    <script
+        src="https://www.google.com/recaptcha/enterprise.js?render=6LeUWXgsAAAAABF3tjwqMRmh3cCzfF5xNy-3qPw3"></script>
 </head>
 
 <body
@@ -103,21 +105,25 @@
 
             setLoading(true, loginBtn);
 
-            const result = await authService.loginWithEmail(email, password);
+            grecaptcha.enterprise.ready(async () => {
+                await grecaptcha.enterprise.execute('6LeUWXgsAAAAABF3tjwqMRmh3cCzfF5xNy-3qPw3', { action: 'LOGIN' });
 
-            if (result.success) {
-                const profile = await authService.loadUserProfile(result.user.uid);
+                const result = await authService.loginWithEmail(email, password);
 
-                // Redirect based on profile completion
-                if (profile && profile.profileComplete) {
-                    window.location.href = 'dashboard.html';
+                if (result.success) {
+                    const profile = await authService.loadUserProfile(result.user.uid);
+
+                    // Redirect based on profile completion
+                    if (profile && profile.profileComplete) {
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        window.location.href = 'profile-setup.html';
+                    }
                 } else {
-                    window.location.href = 'profile-setup.html';
+                    setLoading(false, loginBtn);
+                    showError(result.error);
                 }
-            } else {
-                setLoading(false, loginBtn);
-                showError(result.error);
-            }
+            });
         });
 
         // Google OAuth Login
@@ -127,23 +133,27 @@
 
             setLoading(true, googleBtn);
 
-            const result = await authService.loginWithGoogle();
+            grecaptcha.enterprise.ready(async () => {
+                await grecaptcha.enterprise.execute('6LeUWXgsAAAAABF3tjwqMRmh3cCzfF5xNy-3qPw3', { action: 'LOGIN' });
 
-            if (result.success) {
-                const profile = await authService.loadUserProfile(result.user.uid);
+                const result = await authService.loginWithGoogle();
 
-                // Redirect based on profile completion
-                if (profile && profile.profileComplete) {
-                    window.location.href = 'dashboard.html';
+                if (result.success) {
+                    const profile = await authService.loadUserProfile(result.user.uid);
+
+                    // Redirect based on profile completion
+                    if (profile && profile.profileComplete) {
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        window.location.href = 'profile-setup.html';
+                    }
                 } else {
-                    window.location.href = 'profile-setup.html';
+                    setLoading(false, googleBtn);
+                    if (result.error !== 'Login cancelled') {
+                        showError(result.error);
+                    }
                 }
-            } else {
-                setLoading(false, googleBtn);
-                if (result.error !== 'Login cancelled') {
-                    showError(result.error);
-                }
-            }
+            });
         });
 
         // Check if already authenticated

@@ -12,6 +12,8 @@
         rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/auth.css">
+    <script
+        src="https://www.google.com/recaptcha/enterprise.js?render=6LeUWXgsAAAAABF3tjwqMRmh3cCzfF5xNy-3qPw3"></script>
 </head>
 
 <body
@@ -225,15 +227,19 @@
 
             setLoading(true, signupBtn);
 
-            const result = await authService.signupWithEmail(email, password, name);
+            grecaptcha.enterprise.ready(async () => {
+                await grecaptcha.enterprise.execute('6LeUWXgsAAAAABF3tjwqMRmh3cCzfF5xNy-3qPw3', { action: 'SIGNUP' });
 
-            if (result.success) {
-                // Redirect to profile setup
-                window.location.href = 'profile-setup.html';
-            } else {
-                setLoading(false, signupBtn);
-                showError(result.error);
-            }
+                const result = await authService.signupWithEmail(email, password, name);
+
+                if (result.success) {
+                    // Redirect to profile setup
+                    window.location.href = 'profile-setup.html';
+                } else {
+                    setLoading(false, signupBtn);
+                    showError(result.error);
+                }
+            });
         });
 
         // Google OAuth Signup
@@ -243,17 +249,21 @@
 
             setLoading(true, googleBtn);
 
-            const result = await authService.loginWithGoogle();
+            grecaptcha.enterprise.ready(async () => {
+                await grecaptcha.enterprise.execute('6LeUWXgsAAAAABF3tjwqMRmh3cCzfF5xNy-3qPw3', { action: 'SIGNUP' });
 
-            if (result.success) {
-                // Redirect to profile setup
-                window.location.href = 'profile-setup.html';
-            } else {
-                setLoading(false, googleBtn);
-                if (result.error !== 'Login cancelled') {
-                    showError(result.error);
+                const result = await authService.loginWithGoogle();
+
+                if (result.success) {
+                    // Redirect to profile setup
+                    window.location.href = 'profile-setup.html';
+                } else {
+                    setLoading(false, googleBtn);
+                    if (result.error !== 'Login cancelled') {
+                        showError(result.error);
+                    }
                 }
-            }
+            });
         });
 
         // Check if already authenticated
