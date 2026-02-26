@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Group Details | SocialSpaces</title>
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -13,14 +15,21 @@
 
 <body>
     <nav
-        style="background: var(--surface-50); padding: var(--space-12) var(--space-24); border-bottom: 1px solid var(--surface-200); display: flex; align-items: center;">
+        style="background: var(--surface-50); padding: var(--space-12) var(--space-24); border-bottom: 1px solid var(--surface-200); display: flex; align-items: center; justify-content: space-between;">
         <span style="font-family: 'Anurati', sans-serif; font-size: 20px; color: var(--base-white);">SocialSpaces</span>
+        <button id="dark-mode-toggle"
+            style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; border-radius: 999px; border: 2px solid #1E90FF; background: transparent; color: #1E90FF; white-space: nowrap; transition: background 0.2s, color 0.2s;">🌙
+            Dark Mode</button>
     </nav>
 
-
-
     <main style="max-width: 1200px; margin: 0 auto; padding: 0 24px 64px;">
-        <a href="dashboard.html" class="btn btn-ghost" style="margin-bottom: 24px;">← Back to Dashboard</a>
+        <div style="margin: 24px 0;">
+            <a href="dashboard.html"
+                style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: var(--primary-500); border: 2px solid var(--primary-500); border-radius: var(--radius-md); background: transparent; text-decoration: none; transition: background 0.2s, color 0.2s;"
+                onmouseover="this.style.background='var(--primary-500)';this.style.color='#fff';"
+                onmouseout="this.style.background='transparent';this.style.color='var(--primary-500)';">← Back to
+                Dashboard</a>
+        </div>
 
         <div id="loading" style="text-align: center; padding: 64px;">
             <div style="font-size: 40px; margin-bottom: 16px;">⏳</div>
@@ -255,6 +264,35 @@
             </form>
         </div>
     </div>
+
+    <!-- Dark mode toggle -->
+    <script>
+        (function () {
+            var KEY = 'eca-theme';
+            function currentTheme() { return localStorage.getItem(KEY) || 'light'; }
+            function applyLabel(btn) {
+                btn.textContent = currentTheme() === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode';
+            }
+            var btn = document.getElementById('dark-mode-toggle');
+            if (btn) {
+                applyLabel(btn);
+                btn.addEventListener('mouseover', function () { btn.style.background = '#1E90FF'; btn.style.color = '#ffffff'; });
+                btn.addEventListener('mouseout', function () { btn.style.background = 'transparent'; btn.style.color = '#1E90FF'; });
+                btn.addEventListener('click', function () {
+                    if (currentTheme() === 'dark') {
+                        document.documentElement.classList.remove('dark');
+                        document.documentElement.classList.add('light');
+                        localStorage.setItem(KEY, 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        document.documentElement.classList.remove('light');
+                        localStorage.setItem(KEY, 'dark');
+                    }
+                    applyLabel(btn);
+                });
+            }
+        })();
+    </script>
 
 </body>
 
