@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Setup | SocialSpaces</title>
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -209,27 +211,42 @@
 
         .interest-chip {
             padding: var(--space-12) var(--space-16);
-            border: 2px solid var(--surface-200);
+            border: 2px solid var(--surface-300);
             border-radius: var(--radius-md);
-            background: var(--surface-50);
+            background: var(--surface-100);
             color: var(--text-description);
             font-size: var(--text-sm);
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: center;
             font-weight: 500;
+            user-select: none;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.07),
+                0 2px 4px rgba(0, 0, 0, 0.35),
+                0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .interest-chip:hover {
-            border-color: var(--surface-300);
-            background: var(--surface-100);
+            border-color: var(--primary-400, #38bdf8);
+            background: var(--surface-200);
+            transform: translateY(-2px);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 6px 12px rgba(0, 0, 0, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.25);
         }
 
         .interest-chip.selected {
             background: var(--primary-500);
-            border-color: var(--primary-500);
+            border-color: var(--primary-400, #38bdf8);
             color: var(--base-black);
             font-weight: 600;
+            transform: translateY(-1px);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 4px 14px rgba(56, 189, 248, 0.45),
+                0 2px 6px rgba(0, 0, 0, 0.35);
         }
 
         .skill-level-item {
@@ -260,7 +277,7 @@
 
         .skill-btn {
             padding: 6px 12px;
-            border: 1px solid var(--surface-300);
+            border: 2px solid var(--surface-300);
             border-radius: var(--radius-sm);
             background: var(--surface-100);
             color: var(--text-description);
@@ -268,10 +285,21 @@
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: 500;
+            user-select: none;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.07),
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 2px rgba(0, 0, 0, 0.15);
         }
 
         .skill-btn:hover {
+            border-color: var(--primary-400, #38bdf8);
             background: var(--surface-200);
+            transform: translateY(-1px);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 4px 8px rgba(0, 0, 0, 0.35),
+                0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .skill-btn.active {
@@ -279,6 +307,11 @@
             border-color: var(--secondary-500);
             color: var(--base-black);
             font-weight: 600;
+            transform: translateY(-1px);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 4px 12px rgba(43, 179, 106, 0.45),
+                0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         @media (max-width: 639px) {
@@ -312,9 +345,9 @@
 
         .weekday-chip {
             padding: var(--space-12) var(--space-16);
-            border: 2px solid var(--surface-200);
+            border: 2px solid var(--surface-300);
             border-radius: var(--radius-md);
-            background: var(--surface-50);
+            background: var(--surface-100);
             color: var(--text-description);
             font-size: var(--text-sm);
             cursor: pointer;
@@ -322,18 +355,33 @@
             font-weight: 500;
             min-width: 60px;
             text-align: center;
+            user-select: none;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.07),
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .weekday-chip:hover {
-            border-color: var(--surface-300);
-            background: var(--surface-100);
+            border-color: var(--primary-400, #38bdf8);
+            background: var(--surface-200);
+            transform: translateY(-2px);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 6px 12px rgba(0, 0, 0, 0.35),
+                0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .weekday-chip.selected {
             background: var(--primary-500);
-            border-color: var(--primary-500);
+            border-color: var(--primary-400, #38bdf8);
             color: var(--base-black);
             font-weight: 600;
+            transform: translateY(-1px);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 4px 14px rgba(56, 189, 248, 0.45),
+                0 2px 6px rgba(0, 0, 0, 0.35);
         }
 
         .time-slots {
@@ -345,27 +393,42 @@
 
         .time-slot-chip {
             padding: var(--space-16);
-            border: 2px solid var(--surface-200);
+            border: 2px solid var(--surface-300);
             border-radius: var(--radius-md);
-            background: var(--surface-50);
+            background: var(--surface-100);
             color: var(--text-description);
             font-size: var(--text-sm);
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: center;
             font-weight: 500;
+            user-select: none;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.07),
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .time-slot-chip:hover {
-            border-color: var(--surface-300);
-            background: var(--surface-100);
+            border-color: var(--primary-400, #38bdf8);
+            background: var(--surface-200);
+            transform: translateY(-2px);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 6px 12px rgba(0, 0, 0, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.25);
         }
 
         .time-slot-chip.selected {
             background: var(--primary-500);
-            border-color: var(--primary-500);
+            border-color: var(--primary-400, #38bdf8);
             color: var(--base-black);
             font-weight: 600;
+            transform: translateY(-1px);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 4px 14px rgba(56, 189, 248, 0.45),
+                0 2px 6px rgba(0, 0, 0, 0.35);
         }
 
         .time-slot-label {
@@ -860,6 +923,34 @@
             bio: ''
         };
 
+        // Emoji map for each interest
+        const interestEmojis = {
+            'Sports': '⚽',
+            'Music': '🎵',
+            'Coding': '💻',
+            'Fitness': '💪',
+            'Board Games': '♟️',
+            'Volunteering': '🤝',
+            'Reading': '📚',
+            'Photography': '📷',
+            'Cooking': '🍳',
+            'Travel': '✈️',
+            'Art': '🎨',
+            'Gaming': '🎮',
+            'Dance': '💃',
+            'Yoga': '🧘',
+            'Meditation': '🕯️',
+            'Hiking': '🥾',
+            'Cycling': '🚴',
+            'Swimming': '🏊',
+            'Running': '🏃',
+            'Basketball': '🏀',
+            'Football': '🏈',
+            'Tennis': '🎾',
+            'Badminton': '🏸',
+            'Cricket': '🏏'
+        };
+
         // Initialize Interests Grid
         function initInterestsGrid() {
             const grid = document.getElementById('interestsGrid');
@@ -868,8 +959,9 @@
             availableInterests.forEach(interest => {
                 const chip = document.createElement('div');
                 chip.className = 'interest-chip';
-                chip.textContent = interest;
                 chip.dataset.interest = interest;
+                const emoji = interestEmojis[interest] || '';
+                chip.textContent = emoji ? `${interest} ${emoji}` : interest;
                 chip.addEventListener('click', () => toggleInterest(interest, chip));
                 grid.appendChild(chip);
             });
@@ -1525,5 +1617,14 @@
     </script>
     <script src="../indian_pincode_data.js"></script>
 </body>
+<script type="module">
+    import { initDarkModeToggle } from '../js/dark-mode.js';
+    const btn = document.createElement('button');
+    btn.id = 'dark-mode-toggle';
+    btn.textContent = '🌙 Dark Mode';
+    btn.style.cssText = 'position:fixed;top:16px;right:16px;z-index:999;';
+    document.body.appendChild(btn);
+    initDarkModeToggle();
+</script>
 
 </html>
