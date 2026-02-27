@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../css/auth.css">
     <script
-        src="https://www.google.com/recaptcha/enterprise.js?render=6LeUWXgsAAAAABF3tjwqMRmh3cCzfF5xNy-3qPw3"></script>
+        src="https://www.google.com/recaptcha/enterprise.js?render=6LfBmngsAAAAANLwajriiJ6BcdzyV2GxeugmSnwr"></script>
 </head>
 
 <body
@@ -228,7 +228,7 @@
             setLoading(true, signupBtn);
 
             grecaptcha.enterprise.ready(async () => {
-                await grecaptcha.enterprise.execute('6LeUWXgsAAAAABF3tjwqMRmh3cCzfF5xNy-3qPw3', { action: 'SIGNUP' });
+                await grecaptcha.enterprise.execute('6LfBmngsAAAAANLwajriiJ6BcdzyV2GxeugmSnwr', { action: 'SIGNUP' });
 
                 const result = await authService.signupWithEmail(email, password, name);
 
@@ -250,7 +250,7 @@
             setLoading(true, googleBtn);
 
             grecaptcha.enterprise.ready(async () => {
-                await grecaptcha.enterprise.execute('6LeUWXgsAAAAABF3tjwqMRmh3cCzfF5xNy-3qPw3', { action: 'SIGNUP' });
+                await grecaptcha.enterprise.execute('6LfBmngsAAAAANLwajriiJ6BcdzyV2GxeugmSnwr', { action: 'SIGNUP' });
 
                 const result = await authService.loginWithGoogle();
 
