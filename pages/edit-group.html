@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Group | SocialSpaces</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+    <nav
+        style="padding: var(--space-16); border-bottom: 1px solid var(--surface-200); display: flex; align-items: center; gap: var(--space-24);">
+        <span style="font-family: 'Anurati', sans-serif; font-size: 20px; color: var(--base-white);">SocialSpaces</span>
+        <a href="profile.html" class="btn btn-ghost" style="margin-left: auto;">← Back to Profile</a>
+    </nav>
+
+    <main style="max-width: 800px; margin: 0 auto; padding: var(--space-32) var(--space-16);">
+        <h1>Edit Group</h1>
+
+        <form id="edit-group-form" class="form-group" style="gap: var(--space-24);">
+
+            <!-- Basic Info -->
+            <div class="form-group">
+                <label class="label">Group Name *</label>
+                <input type="text" id="group-name" class="input" placeholder="e.g. Sunday Morning Hiking" required>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Description *</label>
+                <textarea id="group-description" class="input" rows="4"
+                    placeholder="Tell people what your group is about..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Category *</label>
+                <select id="group-category" class="select" required>
+                    <option value="">Select a category</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Education">Education</option>
+                    <option value="Social">Social</option>
+                    <option value="Arts">Arts & Culture</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Health">Health & Wellness</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <!-- Location -->
+            <div style="background: var(--surface-50); padding: var(--space-16); border-radius: var(--radius-md);">
+                <h4 style="margin-bottom: var(--space-16);">Location</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-16);">
+                    <div class="form-group">
+                        <label class="label">City *</label>
+                        <input type="text" id="group-city" class="input" placeholder="e.g. Mumbai" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label">State *</label>
+                        <input type="text" id="group-state" class="input" placeholder="e.g. Maharashtra" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Pincode *</label>
+                        <input type="text" id="group-pincode" class="input" placeholder="e.g. 400001" required
+                            maxlength="6" pattern="[0-9]{6}" title="Enter a 6-digit Indian pincode">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule -->
+            <div style="background: var(--surface-50); padding: var(--space-16); border-radius: var(--radius-md);">
+                <h4 style="margin-bottom: var(--space-16);">Schedule</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16);">
+                    <div class="form-group">
+                        <label class="label">Day</label>
+                        <select id="schedule-day" class="select">
+                            <option value="">Select a day</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Start Time</label>
+                        <input type="time" id="schedule-time" class="input" value="18:00">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: var(--space-16);">
+                    <label class="label">End Time (Optional)</label>
+                    <input type="time" id="schedule-end-time" class="input"
+                        placeholder="Leave empty for 3-hour default">
+                    <small style="color: var(--text-muted); font-size: 12px; display: block; margin-top: 4px;">
+                        If not specified, assumes 3-hour duration
+                    </small>
+                </div>
+                <label class="label"
+                    style="display: flex; align-items: center; gap: var(--space-8); margin-top: var(--space-8);">
+                    <input type="checkbox" id="schedule-recurring"> Recurring Weekly
+                </label>
+            </div>
+
+            <!-- Group Settings -->
+            <div style="background: var(--surface-50); padding: var(--space-16); border-radius: var(--radius-md);">
+                <h4 style="margin-bottom: var(--space-16);">Group Settings</h4>
+
+                <div class="form-group">
+                    <label class="label">Skill Level</label>
+                    <select id="skill-level" class="select">
+                        <option value="beginner">Beginner - No experience needed</option>
+                        <option value="intermediate">Intermediate - Some experience required</option>
+                        <option value="advanced">Advanced - Expert level</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">Language</label>
+                    <select id="language" class="input">
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Both">Both (English & Hindi)</option>
+                    </select>
+                    <small style="color: var(--text-muted); font-size: 12px; display: block; margin-top: 4px;">
+                        Primary language used in the group
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">Privacy</label>
+                    <select id="group-privacy" class="select">
+                        <option value="open">Open - Anyone can join</option>
+                        <option value="closed">Closed - Requires approval</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">Max Members (Optional)</label>
+                    <input type="number" id="max-members" class="input" placeholder="Leave empty for unlimited" min="2">
+                </div>
+            </div>
+
+            <!-- Tags/Interests -->
+            <div class="form-group">
+                <label class="label">Tags/Interests</label>
+                <input type="text" id="group-tags" class="input"
+                    placeholder="e.g. hiking, outdoor, fitness (comma-separated)">
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                    Add tags to help people find your group
+                </p>
+            </div>
+
+            <!-- WhatsApp Integration -->
+            <div style="background: var(--surface-50); padding: var(--space-16); border-radius: var(--radius-md);">
+                <h4 style="margin-bottom: var(--space-16);">📱 WhatsApp Group (Optional)</h4>
+                <div class="form-group">
+                    <label class="label">WhatsApp Group Link</label>
+                    <input type="url" id="whatsapp-link" class="input" placeholder="https://chat.whatsapp.com/...">
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                        Members will use this link to join your WhatsApp group for communication
+                    </p>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Save Changes</button>
+        </form>
+    </main>
+
+    <script type="module" src="../js/edit-group-integration.js"></script>
+</body>
+
+</html>

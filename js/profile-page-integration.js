@@ -316,9 +316,11 @@ class ProfilePageIntegration {
             const container = document.getElementById('groups-container');
             if (!container) return;
 
-            // Query groups where user is member or creator
+            const uid = this.currentProfile.uid;
+
+            // Query groups where user is a member (includes created groups since creator is also a member)
             const groups = await firestoreService.queryDocuments('groups', [
-                { field: 'members', operator: 'array-contains', value: this.currentProfile.uid }
+                { field: 'members', operator: 'array-contains', value: uid }
             ]);
 
             if (!groups || groups.length === 0) {
@@ -326,24 +328,50 @@ class ProfilePageIntegration {
                 return;
             }
 
-            // Display groups
-            container.innerHTML = groups.map(group => `
+            // Render group cards with Created/Joined tags and Edit/Delete for creators
+            container.innerHTML = groups.map(group => {
+                const isCreator = group.creatorId === uid;
+                const roleTag = isCreator
+                    ? '<span style="background: #22c55e; color: #fff; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">Created</span>'
+                    : '<span style="background: var(--primary-500); color: #fff; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">Joined</span>';
+
+                const actionButtons = isCreator
+                    ? `<div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button class="btn btn-ghost btn-sm" style="font-size: 12px; padding: 4px 12px;" onclick="event.stopPropagation(); window.location.href='edit-group.html?id=${group.id}'">✏️ Edit</button>
+                        <button class="btn btn-ghost btn-sm" style="font-size: 12px; padding: 4px 12px; color: #ef4444;" onclick="event.stopPropagation(); window._deleteGroup('${group.id}', '${(group.name || '').replace(/'/g, "\\'")}')">🗑️ Delete</button>
+                       </div>`
+                    : '';
+
+                return `
                 <div class="group-card" style="background: var(--surface-200); padding: 16px; border-radius: 12px; margin-bottom: 12px; cursor: pointer;" onclick="window.location.href='group-details.html?id=${group.id}'">
                     <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div>
+                        <div style="flex: 1;">
                             <h3 style="font-size: 16px; font-weight: 600; color: var(--base-white); margin-bottom: 4px;">${group.name || 'Unnamed Group'}</h3>
                             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">${group.description || 'No description'}</p>
                             <div style="display: flex; gap: 12px; font-size: 12px; color: var(--text-description);">
                                 <span>👥 ${group.members?.length || 0} members</span>
                                 <span>📍 ${group.location?.city || 'Unknown'}</span>
+                                <span>📌 ${group.location?.pinCode || '—'}</span>
                             </div>
+                            ${actionButtons}
                         </div>
-                        <span class="badge" style="background: var(--primary-500); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">
-                            ${group.createdBy === this.currentProfile.uid ? 'Owner' : 'Member'}
-                        </span>
+                        ${roleTag}
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
+
+            // Expose delete handler globally for onclick
+            window._deleteGroup = async (groupId, groupName) => {
+                if (!confirm(`Are you sure you want to delete "${groupName}"? This cannot be undone.`)) return;
+                try {
+                    await groupService.deleteGroup(groupId, uid);
+                    alert('Group deleted successfully.');
+                    this.loadUserGroups(); // Refresh list
+                } catch (err) {
+                    console.error('❌ Delete failed:', err);
+                    alert('Failed to delete group: ' + err.message);
+                }
+            };
 
             console.log(`✅ Loaded ${groups.length} groups`);
         } catch (error) {
