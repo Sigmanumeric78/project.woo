@@ -52,7 +52,7 @@
             <!-- Location -->
             <div style="background: var(--surface-50); padding: var(--space-16); border-radius: var(--radius-md);">
                 <h4 style="margin-bottom: var(--space-16);">Location</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-16);">
                     <div class="form-group">
                         <label class="label">City *</label>
                         <input type="text" id="group-city" class="input" placeholder="e.g. Mumbai" required>
@@ -60,6 +60,11 @@
                     <div class="form-group">
                         <label class="label">State *</label>
                         <input type="text" id="group-state" class="input" placeholder="e.g. Maharashtra" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Pincode *</label>
+                        <input type="text" id="group-pincode" class="input" placeholder="e.g. 400001" required
+                            maxlength="6" pattern="[0-9]{6}" title="Enter a 6-digit Indian pincode">
                     </div>
                 </div>
             </div>

@@ -4,6 +4,88 @@
  */
 
 /**
+ * Calculate real road distance between two lat/lng points using the public OSRM API.
+ * Falls back to Haversine (straight-line) if OSRM is unavailable.
+ *
+ * OSRM public endpoint: https://router.project-osrm.org
+ * @param {number} lat1 - Origin latitude
+ * @param {number} lng1 - Origin longitude
+ * @param {number} lat2 - Destination latitude
+ * @param {number} lng2 - Destination longitude
+ * @returns {Promise<number>} Distance in km
+ */
+export async function getOSRMDistance(lat1, lng1, lat2, lng2) {
+    try {
+        // OSRM public demo server — car profile
+        const url = `https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${lng2},${lat2}?overview=false`;
+        const response = await fetch(url, { signal: AbortSignal.timeout(5000) }); // 5s timeout
+        const data = await response.json();
+
+        if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+            const distanceKm = data.routes[0].distance / 1000; // metres → km
+            console.log(`🗺️ OSRM road distance: ${distanceKm.toFixed(2)} km`);
+            return distanceKm;
+        }
+    } catch (err) {
+        console.warn('⚠️ OSRM unavailable, falling back to Haversine:', err.message);
+    }
+
+    // Fallback: Haversine straight-line distance
+    return haversineKm(lat1, lng1, lat2, lng2);
+}
+
+/** Haversine straight-line distance in km */
+function haversineKm(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const toRad = d => d * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ---- Pincode Geocoding (cached) ----
+const _pincodeCache = new Map();
+
+/**
+ * Geocode an Indian pincode to lat/lng using Nominatim.
+ * Results are cached so each pincode is looked up only once per session.
+ *
+ * @param {string|number} pincode - 6-digit Indian pincode
+ * @returns {Promise<{lat: number, lng: number}|null>} Coordinates or null
+ */
+export async function geocodePincode(pincode) {
+    const pin = String(pincode).trim();
+    if (!pin || pin.length < 5) return null;
+
+    // Return cached result if available
+    if (_pincodeCache.has(pin)) {
+        console.log(`📌 [Cache] Pincode ${pin}:`, _pincodeCache.get(pin));
+        return _pincodeCache.get(pin);
+    }
+
+    try {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&postalcode=${pin}&country=India&limit=1`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            const result = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+            _pincodeCache.set(pin, result);
+            console.log(`📌 [Nominatim] Pincode ${pin} → ${result.lat}, ${result.lng}`);
+            return result;
+        }
+    } catch (err) {
+        console.warn(`⚠️ Nominatim pincode lookup failed for ${pin}:`, err.message);
+    }
+
+    // Cache the miss too so we don't retry
+    _pincodeCache.set(pin, null);
+    return null;
+}
+
+/**
  * Geocode an address to coordinates using Nominatim
  * @param {string} address - The address to geocode
  * @returns {Promise<{lat: number, lon: number}|null>} Coordinates or null if not found

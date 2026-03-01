@@ -461,7 +461,8 @@
             <div id="groups" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h2 class="section-title" style="margin: 0;">My Groups</h2>
-                    <button class="btn btn-primary btn-sm">Create Group</button>
+                    <a href="create-group.html" class="btn btn-primary btn-sm" style="text-decoration: none;">Create
+                        Group</a>
                 </div>
                 <div id="groups-container">
                     <!-- Populated by JS -->
@@ -489,8 +490,9 @@
                 <div style="margin-bottom: 24px;">
                     <label
                         style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">Search
-                        Radius: <span style="color: var(--base-white); font-weight: 600;">15 km</span></label>
-                    <input type="range" min="1" max="50" value="15"
+                        Radius: <span id="pref-radius-label"
+                            style="color: var(--base-white); font-weight: 600;">Loading...</span></label>
+                    <input type="range" id="pref-radius-slider" min="1" max="50" value="10"
                         style="width: 100%; accent-color: var(--primary-500); height: 6px; background: var(--surface-200); border-radius: 4px;">
                     <div
                         style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-description); margin-top: 8px;">
@@ -503,7 +505,7 @@
                     <label
                         style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">Location</label>
                     <div style="display: flex; gap: 8px;">
-                        <input type="text" id="location-input" value="Connaught Place, New Delhi"
+                        <input type="text" id="location-input" value="" placeholder="Loading your location..."
                             style="flex: 1; background: var(--surface-50); border: 1px solid var(--surface-200); padding: 10px; border-radius: 8px; color: var(--base-white);">
                         <button class="btn btn-secondary" id="btn-detect-location">Detect</button>
                     </div>

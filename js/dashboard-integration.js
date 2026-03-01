@@ -6,6 +6,7 @@ import { groupService } from './group-service.js';
 import { auth } from './firebase-config.js';
 import { profileService } from './profile-service.js';
 import { rankGroups, DEFAULT_WEIGHTS } from './ranking-engine-fixed.js';
+import { getOSRMDistance, geocodePincode } from './route-utils.js';
 
 console.log('📦 Dashboard integration module loaded');
 
@@ -13,87 +14,123 @@ let currentUser = null;
 let allGroups = [];
 
 /**
- * Transform user profile to match ranking engine expectations
+ * Transform user profile to match ranking engine expectations.
+ * Resolves lat/lng from:
+ *   1. GPS coords captured during signup (profile.location.latitude / longitude)
+ *   2. Pincode lookup from indian_pincode_data.js
+ *   3. Falls back to Delhi if nothing else works
  */
 function transformUserProfile(profile) {
-    // Clone to avoid mutating the original
     const transformed = { ...profile };
 
-    // 1. Add coordinates from pincode if missing
-    if (profile.location && (!profile.location.latitude || !profile.location.longitude)) {
+    // ---- 1. Resolve user coordinates ----
+    let lat = null;
+    let lng = null;
+
+    // Priority A: real GPS coords from profile setup geolocation
+    if (profile.location?.latitude && profile.location?.longitude) {
+        lat = parseFloat(profile.location.latitude);
+        lng = parseFloat(profile.location.longitude);
+        console.log('📍 User coords from GPS:', lat, lng);
+    }
+    // Priority B: already stored as lat/lng (some older profiles)
+    else if (profile.location?.lat && profile.location?.lng) {
+        lat = parseFloat(profile.location.lat);
+        lng = parseFloat(profile.location.lng);
+        console.log('📍 User coords from stored lat/lng:', lat, lng);
+    }
+    // Priority C: derive from pincode
+    else if (profile.location?.pinCode) {
         const coords = getCoordinatesFromPincode(profile.location.pinCode);
-        transformed.location = {
-            ...profile.location,
-            lat: coords.lat,
-            lng: coords.lng,
-            latitude: coords.lat,
-            longitude: coords.lng
-        };
-    } else if (profile.location && profile.location.latitude && profile.location.longitude) {
-        // Normalize lat/lng vs latitude/longitude
-        transformed.location = {
-            ...profile.location,
-            lat: profile.location.latitude,
-            lng: profile.location.longitude
-        };
+        if (coords) {
+            lat = coords.lat;
+            lng = coords.lng;
+            console.log('📍 User coords from pincode', profile.location.pinCode, ':', lat, lng);
+        }
     }
 
-    // 2. Transform availability format
+    // Apply resolved coordinates
+    if (lat && lng) {
+        transformed.location = {
+            ...profile.location,
+            lat,
+            lng,
+            latitude: lat,
+            longitude: lng
+        };
+    } else {
+        // No coords at all — radius filtering will be skipped gracefully
+        console.warn('⚠️ Could not resolve user location coordinates. Distance filtering will be skipped.');
+        transformed.location = { ...profile.location, lat: null, lng: null };
+    }
+
+    // ---- 2. Transform availability format ----
     if (profile.availability && profile.availability.length > 0) {
         transformed.availability = profile.availability.map(avail => {
-            // If already in correct format, return as-is
-            if (avail.startTime && avail.endTime) {
-                return avail;
-            }
+            if (avail.startTime && avail.endTime) return avail;
 
-            // Transform from {day, slots} to {day, startTime, endTime}
             const dayMap = {
                 'Sun': 'Sunday', 'Mon': 'Monday', 'Tue': 'Tuesday',
                 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday', 'Sat': 'Saturday'
             };
-
             const slotTimes = {
                 'Morning': { start: '06:00', end: '12:00' },
                 'Afternoon': { start: '12:00', end: '17:00' },
                 'Evening': { start: '17:00', end: '21:00' },
                 'Night': { start: '21:00', end: '23:59' }
             };
-
             const fullDay = dayMap[avail.day] || avail.day;
-            const slot = avail.slots && avail.slots[0] ? avail.slots[0] : 'Evening';
+            const slot = avail.slots?.[0] || 'Evening';
             const times = slotTimes[slot] || slotTimes['Evening'];
-
-            return {
-                day: fullDay,
-                startTime: times.start,
-                endTime: times.end
-            };
+            return { day: fullDay, startTime: times.start, endTime: times.end };
         });
     }
 
-    // 3. Use preferences.radius as user.radius
-    if (profile.preferences && profile.preferences.radius) {
-        transformed.radius = profile.preferences.radius;
+    // ---- 3. Extract radius from preferences ----
+    if (profile.preferences?.radius) {
+        transformed.radius = Number(profile.preferences.radius);
+        console.log('📍 User saved radius:', transformed.radius, 'km');
     }
 
     return transformed;
 }
 
 /**
- * Get coordinates from Indian pincode
+ * Build coordinate lookup from the globally loaded indian_pincode_data.js.
+ * The file exposes `window.PINCODE_DATA` as an object keyed by pincode string.
+ * Each entry has { district, state, lat, lng } (or similar).
  */
 function getCoordinatesFromPincode(pincode) {
-    // Pincode to coordinates mapping (sample for common cities)
-    const pincodeCoords = {
+    if (!pincode) return null;
+
+    // indian_pincode_data.js exposes window.PINCODE_DATA
+    if (window.PINCODE_DATA) {
+        const entry = window.PINCODE_DATA[String(pincode)];
+        if (entry && entry.lat && entry.lng) {
+            return { lat: parseFloat(entry.lat), lng: parseFloat(entry.lng) };
+        }
+        if (entry && entry.Latitude && entry.Longitude) {
+            return { lat: parseFloat(entry.Latitude), lng: parseFloat(entry.Longitude) };
+        }
+    }
+
+    // Fallback hardcoded table for the most common Indian cities/pincodes
+    const fallback = {
         '281004': { lat: 27.4924, lng: 77.6737 }, // Mathura
         '110001': { lat: 28.6139, lng: 77.2090 }, // Delhi
         '400001': { lat: 18.9388, lng: 72.8354 }, // Mumbai
         '560001': { lat: 12.9716, lng: 77.5946 }, // Bangalore
         '600001': { lat: 13.0827, lng: 80.2707 }, // Chennai
-        '700001': { lat: 22.5726, lng: 88.3639 }  // Kolkata
+        '700001': { lat: 22.5726, lng: 88.3639 }, // Kolkata
+        '500001': { lat: 17.3850, lng: 78.4867 }, // Hyderabad
+        '411001': { lat: 18.5204, lng: 73.8567 }, // Pune
+        '380001': { lat: 23.0225, lng: 72.5714 }, // Ahmedabad
+        '302001': { lat: 26.9124, lng: 75.7873 }, // Jaipur
+        '226001': { lat: 26.8467, lng: 80.9462 }, // Lucknow
+        '208001': { lat: 26.4499, lng: 80.3319 }, // Kanpur
+        '282001': { lat: 27.1767, lng: 78.0081 }  // Agra
     };
-
-    return pincodeCoords[pincode] || { lat: 28.6139, lng: 77.2090 }; // Default to Delhi
+    return fallback[String(pincode)] || null;
 }
 
 export async function initDashboardFilters() {
@@ -116,7 +153,17 @@ export async function initDashboardFilters() {
 
         // Transform profile for ranking engine compatibility
         currentUser = transformUserProfile(currentUser);
-        console.log('✅ User profile transformed:', JSON.stringify(currentUser, null, 2));
+        console.log('✅ User profile transformed. Location:', currentUser.location, 'Radius:', currentUser.radius, 'km');
+
+        // ---- Set radius slider to user's saved radius ----
+        const savedRadius = currentUser.radius || 10;
+        const radiusInput = document.getElementById('filter-radius');
+        const radiusDisplay = document.getElementById('radius-display');
+        if (radiusInput) {
+            radiusInput.value = savedRadius;
+            if (radiusDisplay) radiusDisplay.textContent = `${savedRadius} km`;
+            console.log('✅ Radius slider initialised to', savedRadius, 'km from user profile');
+        }
 
         // Load all groups from Firestore
         allGroups = await groupService.queryGroups([]);
@@ -146,55 +193,96 @@ export async function initDashboardFilters() {
 }
 
 /**
- * Transform Firestore groups to ranking engine format
+ * Transform Firestore groups to ranking engine format.
+ * Pincode-based distance: geocode user pincode + group pincode via Nominatim,
+ * then compute OSRM road distance. Groups without a pincode get Infinity (excluded).
+ *
  * @param {Array} firestoreGroups - Groups from Firestore
- * @returns {Array} Transformed groups
+ * @returns {Promise<Array>} Transformed groups with calculatedDistance filled in
  */
-function transformGroupsForRanking(firestoreGroups) {
-    return firestoreGroups.map(group => {
-        // Parse schedule time (e.g., "09:00" to startTime/endTime)
+async function transformGroupsForRanking(firestoreGroups) {
+    // ---- 1. Geocode user's pincode ONCE ----
+    const userPincode = currentUser?.location?.pinCode;
+    let userCoords = null;
+
+    if (userPincode) {
+        userCoords = await geocodePincode(userPincode);
+        if (userCoords) {
+            console.log(`📌 User pincode ${userPincode} → ${userCoords.lat}, ${userCoords.lng}`);
+        } else {
+            console.warn(`⚠️ Could not geocode user pincode: ${userPincode}`);
+        }
+    } else {
+        console.warn('⚠️ User has no pincode — distance filtering will be skipped');
+    }
+
+    // ---- 2. Process each group ----
+    const transformed = await Promise.all(firestoreGroups.map(async (group) => {
+        // Parse schedule
         let startTime = '09:00';
         let endTime = '12:00';
-
         if (group.schedule?.time) {
             startTime = group.schedule.time;
-            // Assume 3-hour duration if no end time
             const [hours, minutes] = startTime.split(':').map(Number);
             const endHours = (hours + 3) % 24;
             endTime = `${String(endHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
         }
 
-        // Get coordinates from location or use default
-        const lat = group.location?.coordinates?.lat || 28.6139; // Default: Delhi
-        const lng = group.location?.coordinates?.lng || 77.2090;
+        // ---- Calculate distance using pincodes ----
+        let calculatedDistance = Infinity; // Default: exclude
+        let groupLat = null;
+        let groupLng = null;
+        const groupPincode = group.location?.pinCode;
+
+        if (userCoords && groupPincode) {
+            // Geocode group pincode
+            const groupCoords = await geocodePincode(groupPincode);
+            if (groupCoords) {
+                groupLat = groupCoords.lat;
+                groupLng = groupCoords.lng;
+                // Get real OSRM road distance
+                calculatedDistance = await getOSRMDistance(
+                    userCoords.lat, userCoords.lng,
+                    groupLat, groupLng
+                );
+                console.log(`📏 "${group.name}" (pin: ${groupPincode}) → ${calculatedDistance.toFixed(2)} km`);
+            } else {
+                console.warn(`⚠️ Cannot geocode group "${group.name}" pincode ${groupPincode} — excluded`);
+            }
+        } else if (!userCoords) {
+            // No user coords — can't filter, show all at distance 0
+            calculatedDistance = 0;
+        } else {
+            console.warn(`⚠️ Group "${group.name}" has no pincode — excluded from radius filter`);
+        }
 
         return {
             ...group,
-            // Transform schedule
+            calculatedDistance,
             schedule: {
                 ...group.schedule,
                 dayOfWeek: group.schedule?.day || 'Saturday',
-                startTime: startTime,
-                endTime: endTime
+                startTime,
+                endTime
             },
-            // Transform location
             location: {
                 ...group.location,
-                lat: lat,
-                lng: lng
+                lat: groupLat,
+                lng: groupLng,
+                coordinates: { lat: groupLat, lng: groupLng }
             },
-            // Add missing fields with defaults
-            language: 'English', // Default language
+            language: 'English',
             healthMetrics: {
                 lastActivityDate: group.createdAt || new Date(),
                 messagesPerDay: group.stats?.activeMembers || 1,
                 eventsPerMonth: 2,
                 averageAttendance: group.memberCount || 1
             },
-            // Keep original members count
             members: group.memberCount || 1
         };
-    });
+    }));
+
+    return transformed;
 }
 
 // --- Binder Functions ---
@@ -320,12 +408,9 @@ function populateInterestTags() {
     const container = document.getElementById('interest-tags');
     if (!container) return;
 
-    // Transform groups first
-    const transformedGroups = transformGroupsForRanking(allGroups);
-
-    // Extract unique tags from transformed groups
+    // Read tags directly from raw Firestore groups (no async transform needed)
     const allTags = new Set();
-    transformedGroups.forEach(g => {
+    allGroups.forEach(g => {
         if (g.tags && Array.isArray(g.tags)) {
             g.tags.forEach(t => allTags.add(t));
         }
@@ -334,7 +419,7 @@ function populateInterestTags() {
     container.innerHTML = '';
     allTags.forEach(tag => {
         const chip = document.createElement('div');
-        chip.className = 'interest-tag'; // Defined in dashboard.css/html styles
+        chip.className = 'interest-tag';
         chip.textContent = tag;
         chip.onclick = () => {
             chip.classList.toggle('active');
@@ -364,10 +449,10 @@ async function updateDashboard() {
         // 1. Collect Filters
         const filters = collectFilters();
 
-        // 2. Transform Firestore groups to ranking engine format
-        const transformedGroups = transformGroupsForRanking(allGroups);
+        // 2. Transform Firestore groups — async: geocodes locations + OSRM distances
+        const transformedGroups = await transformGroupsForRanking(allGroups);
 
-        // 3. Rank (using transformed groups)
+        // 3. Rank (groups already have calculatedDistance pre-filled)
         const results = await rankGroups(transformedGroups, currentUser, filters, DEFAULT_WEIGHTS);
 
         // 4. Render
@@ -384,15 +469,16 @@ async function updateDashboard() {
 }
 
 function collectFilters() {
+    const radiusInput = document.getElementById('filter-radius');
+    const savedRadius = currentUser?.radius || 10;
+    // Use slider value if present, otherwise fall back to user's saved radius
+    const maxRadius = radiusInput ? parseInt(radiusInput.value) : savedRadius;
+
     const filters = {
         searchQuery: getVal('filter-search'),
-        maxRadius: parseInt(getVal('filter-radius')) || 50,
+        maxRadius,
         sortBy: getVal('sort-select') || 'best-match',
-
-        // Time Filter: Custom or User Default (Implicitly required now)
-        timeFilter: customTimeFilter || null, // If null, ranking engine should use user.availability
-
-        // Checkboxes
+        timeFilter: customTimeFilter || null,
         strictSkill: getChecked('strict-skill'),
         privacy: getCheckedValues('.privacy-filter'),
         languages: getCheckedValues('.language-filter'),
@@ -423,12 +509,13 @@ function resetFilters() {
     // Reset Inputs
     document.getElementById('filter-search').value = '';
 
-    // Reset Radius
+    // Reset Radius back to user's saved range (not hardcoded 50)
     const rInput = document.getElementById('filter-radius');
+    const savedRadius = currentUser?.radius || 10;
     if (rInput) {
-        rInput.value = 50; // Max radius by default
+        rInput.value = savedRadius;
         const rDisplay = document.getElementById('radius-display');
-        if (rDisplay) rDisplay.textContent = '50 km';
+        if (rDisplay) rDisplay.textContent = `${savedRadius} km`;
     }
 
     // Reset Time
@@ -464,12 +551,13 @@ function updateActiveFilterChips(filters) {
         updateDashboard();
     });
 
-    if (filters.maxRadius < 50) addChip(`Radius: < ${filters.maxRadius}km`, () => {
+    const savedRadius = currentUser?.radius || 10;
+    if (filters.maxRadius !== savedRadius) addChip(`Radius: ${filters.maxRadius} km`, () => {
         const rInput = document.getElementById('filter-radius');
         if (rInput) {
-            rInput.value = 50;
+            rInput.value = savedRadius;
             const rDisplay = document.getElementById('radius-display');
-            if (rDisplay) rDisplay.textContent = '50 km';
+            if (rDisplay) rDisplay.textContent = `${savedRadius} km`;
         }
         updateDashboard();
     });
@@ -496,76 +584,45 @@ function renderGroups(inRadius, outOfRadius) {
 
     // Update Header
     const resultsHeader = document.getElementById('results-header');
-    const outResultsHeader = document.getElementById('out-radius-header');
-
-    // We need to know the current radius. We can get it from the input directly for now as it's UI state
     const radiusInput = document.getElementById('filter-radius');
-    if (radiusInput) {
-        if (resultsHeader) resultsHeader.textContent = `Groups within ${radiusInput.value} km`;
-        if (outResultsHeader) outResultsHeader.textContent = `Other groups (outside ${radiusInput.value} km)`;
+    if (radiusInput && resultsHeader) {
+        resultsHeader.textContent = `Groups within ${radiusInput.value} km`;
     }
 
     const inRadiusContainer = document.getElementById('in-radius-groups');
-    const outRadiusContainer = document.getElementById('out-radius-groups');
     const inRadiusSection = document.getElementById('in-radius-section');
     const outRadiusSection = document.getElementById('out-radius-section');
     const noResults = document.getElementById('no-results');
 
-    // Update counts
+    // Update counts (only in-radius matters now)
     const inRadiusCount = document.getElementById('in-radius-count');
-    const outRadiusCount = document.getElementById('out-radius-count');
     const totalCount = document.getElementById('total-results-count');
-
     if (inRadiusCount) inRadiusCount.textContent = inRadius.length;
-    if (outRadiusCount) outRadiusCount.textContent = outOfRadius.length;
-    if (totalCount) totalCount.textContent = inRadius.length + outOfRadius.length;
+    if (totalCount) totalCount.textContent = inRadius.length;
 
-    // Check if TOTAL no results
-    if (inRadius.length === 0 && outOfRadius.length === 0) {
-        console.log('⚠️ No results found');
+    // ALWAYS hide the out-of-radius section — user doesn't want to see them
+    if (outRadiusSection) outRadiusSection.style.display = 'none';
+
+    // If no groups in radius → show "No groups found"
+    if (inRadius.length === 0) {
+        console.log('⚠️ No groups found within radius');
         if (noResults) noResults.style.display = 'block';
         if (inRadiusSection) inRadiusSection.style.display = 'none';
-        if (outRadiusSection) outRadiusSection.style.display = 'none';
         return;
     }
 
-    // Hide "No Results" state if we have results
+    // Hide "No Results" state
     if (noResults) noResults.style.display = 'none';
 
-    // --- Render In-Radius ---
+    // Render in-radius groups
     if (inRadiusSection) {
-        if (inRadius.length > 0) {
-            inRadiusSection.style.display = 'block';
-            if (inRadiusContainer) {
-                inRadiusContainer.innerHTML = '';
-                inRadius.forEach(group => {
-                    const card = createGroupCard(group);
-                    inRadiusContainer.appendChild(card);
-                });
-            }
-        } else {
-            // Explicitly hide if empty
-            inRadiusSection.style.display = 'none';
-            if (inRadiusContainer) inRadiusContainer.innerHTML = '';
-        }
-    }
-
-    // --- Render Out-of-Radius ---
-    if (outRadiusSection) {
-        if (outOfRadius.length > 0) {
-            outRadiusSection.style.display = 'block';
-            if (outRadiusContainer) {
-                outRadiusContainer.style.display = 'grid';
-                outRadiusContainer.innerHTML = '';
-                outOfRadius.forEach(group => {
-                    const card = createGroupCard(group);
-                    outRadiusContainer.appendChild(card);
-                });
-            }
-        } else {
-            // Explicitly hide if empty
-            outRadiusSection.style.display = 'none';
-            if (outRadiusContainer) outRadiusContainer.innerHTML = '';
+        inRadiusSection.style.display = 'block';
+        if (inRadiusContainer) {
+            inRadiusContainer.innerHTML = '';
+            inRadius.forEach(group => {
+                const card = createGroupCard(group);
+                inRadiusContainer.appendChild(card);
+            });
         }
     }
 
@@ -607,7 +664,7 @@ function createGroupCard(group) {
             
             <div class="info-row">
                 <div class="info-item">
-                    <span>📍</span> ${group.calculatedDistance ? group.calculatedDistance.toFixed(1) : '0.0'} km
+                    <span>📍</span> ${isFinite(group.calculatedDistance) ? group.calculatedDistance.toFixed(1) + ' km' : '? km'}
                 </div>
                 <div class="info-item">
                     <span>👥</span> ${group.memberCount || 0}

@@ -1,9 +1,24 @@
 /**
- * Ranking Engine for ECA-Connect
+ * Ranking Engine for SocialSpaces
  * Two-phase ranking pipeline: hard filters → radius split → weighted scoring
  */
 
-import { calculateRoute } from './route-utils.js';
+/**
+ * Haversine formula — straight-line distance between two lat/lng points in km.
+ * Much faster than a route API call and works offline.
+ */
+function haversineDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371; // Earth radius in km
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
 
 // Default component weights (can be customized)
 const DEFAULT_WEIGHTS = {
@@ -26,42 +41,47 @@ const MIN_TIME_OVERLAP = 30; // Minimum overlap in minutes for time filter
  * @returns {Object} {inRadius: [], outOfRadius: []}
  */
 export async function rankGroups(groups, user, filters = {}, weights = DEFAULT_WEIGHTS) {
-    console.log('🔄 rankGroups called with:', groups.length, 'groups');
-    console.log('👤 User object:', JSON.stringify(user, null, 2));
+    console.log('🔄 rankGroups called with:', groups.length, 'groups, radius:', user.radius, 'km');
 
     // Phase A: Apply hard filters
     const eligible = applyHardFilters(groups, user, filters);
     console.log('✅ After hard filters:', eligible.length, 'eligible groups');
 
-    // Calculate distances for all eligible groups
-    const groupsWithDistance = await Promise.all(
-        eligible.map(async (group) => {
-            const route = await calculateRoute(
-                { lat: user.location.lat, lon: user.location.lng },
-                { lat: group.location.lat, lon: group.location.lng },
-                'car'
-            );
-            const distance = route ? route.distance / 1000 : group.distance; // km
-            return { ...group, calculatedDistance: distance };
-        })
-    );
-    console.log('✅ After distance calculation:', groupsWithDistance.length, 'groups with distances');
+    // Phase B: Use pre-computed distances from transformGroupsForRanking (OSRM/Nominatim).
+    // If calculatedDistance is already set on the group, trust it.
+    // Guard: if user has no location, fall back to showing all groups without distance filtering.
+    const userLat = user.location?.lat;
+    const userLng = user.location?.lng;
 
-    // Phase B: Split by radius (Hard limit at maxRadius)
-    // We pass maxRadius to splitByRadius now
+    const groupsWithDistance = eligible.map((group) => {
+        // Use OSRM-pre-computed distance if available
+        if (typeof group.calculatedDistance === 'number') {
+            return group; // already has distance (including Infinity for unresolvable)
+        }
+
+        // Fallback: compute Haversine locally if caller didn't pre-compute
+        if (!userLat || !userLng) {
+            return { ...group, calculatedDistance: 0 };
+        }
+
+        const groupLat = group.location?.coordinates?.lat ?? group.location?.lat ?? null;
+        const groupLng = group.location?.coordinates?.lng ?? group.location?.lng ?? null;
+        if (groupLat && groupLng) {
+            return { ...group, calculatedDistance: haversineDistance(userLat, userLng, groupLat, groupLng) };
+        }
+        // No coords — use Infinity so this group is strictly excluded
+        return { ...group, calculatedDistance: Infinity };
+    });
+
+    console.log('✅ Groups with distances resolved:', groupsWithDistance.length);
+
+    // Phase C: Split by radius
     const { inRadius, outOfRadius } = splitByRadius(groupsWithDistance, user, filters.maxRadius);
     console.log('✅ After radius split: inRadius =', inRadius.length, ', outOfRadius =', outOfRadius.length);
 
-    // Phase C: Calculate scores and rank each set
-    const rankedInRadius = await rankGroupSet(inRadius, user, filters, weights, true);
-    // Out of radius groups are those BEYOND the selected radius but still in the list
-    // If we want to strictly HIDE them, we just return empty, or we separate them.
-    // The previous design showed "Other groups". 
-    // If requirement is "Sort groups on basis of that", maybe we just rank everything but highlight distance?
-    // User said: "remove the contanst number 5 km ... sort the gorups on the basis of that"
-    // Interpretation: The slider sets the "In Radius" threshold. Groups outside are "Out of Radius".
-
-    const rankedOutOfRadius = await rankGroupSet(outOfRadius, user, filters, weights, false);
+    // Phase D: Calculate scores and rank each set
+    const rankedInRadius = rankGroupSet(inRadius, user, filters, weights, true);
+    const rankedOutOfRadius = rankGroupSet(outOfRadius, user, filters, weights, false);
     console.log('✅ Final results: inRadius =', rankedInRadius.length, ', outOfRadius =', rankedOutOfRadius.length);
 
     return {
@@ -126,26 +146,23 @@ function applyHardFilters(groups, user, filters) {
 /**
  * Split groups by radius
  */
-/**
- * Split groups by radius
- */
 function splitByRadius(groups, user, maxRadius) {
     const inRadius = [];
     const outOfRadius = [];
 
-    // Use the filter maxRadius, defaulting to user.radius or 50 if undefined
-    const threshold = maxRadius || user.radius || 50;
-    console.log('📏 Radius threshold:', threshold, 'km');
+    // Priority: filter slider value → user's saved radius → default 10 km
+    const threshold = maxRadius || user.radius || 10;
+    console.log('📏 Radius threshold:', threshold, 'km (user saved:', user.radius, ')');
 
     groups.forEach(group => {
-        console.log(`📍 Group "${group.name}": distance = ${group.calculatedDistance} km, threshold = ${threshold} km`);
-
-        if (group.calculatedDistance <= threshold) {
+        const dist = group.calculatedDistance;
+        // Infinity = unresolvable location → always exclude from in-radius
+        if (dist === Infinity || dist === null || dist === undefined) {
+            outOfRadius.push(group);
+        } else if (dist <= threshold) {
             inRadius.push(group);
-            console.log(`  ✅ Added to IN-RADIUS`);
         } else {
             outOfRadius.push(group);
-            console.log(`  ❌ Added to OUT-OF-RADIUS`);
         }
     });
 
@@ -154,8 +171,9 @@ function splitByRadius(groups, user, maxRadius) {
 
 /**
  * Rank a set of groups (in-radius or out-of-radius)
+ * Now synchronous — distance is pre-calculated via Haversine.
  */
-async function rankGroupSet(groups, user, filters, weights, isInRadius) {
+function rankGroupSet(groups, user, filters, weights, isInRadius) {
     const groupsWithScores = groups.map(group => {
         const componentScores = calculateComponentScores(group, user, filters, isInRadius);
         const finalScore = calculateFinalScore(componentScores, weights);
@@ -164,7 +182,6 @@ async function rankGroupSet(groups, user, filters, weights, isInRadius) {
             ...group,
             componentScores,
             finalScore,
-            // Calculate compatibility percentage (exclude health and text relevance)
             compatibilityScore: calculateCompatibilityScore(componentScores, weights)
         };
     });
@@ -174,14 +191,12 @@ async function rankGroupSet(groups, user, filters, weights, isInRadius) {
 
     return groupsWithScores.sort((a, b) => {
         if (sortBy === 'nearest') {
-            return a.calculatedDistance - b.calculatedDistance;
+            return (a.calculatedDistance ?? 0) - (b.calculatedDistance ?? 0);
         } else if (sortBy === 'most-active') {
-            // Sort by activity score (mock calculation using messages per day)
             const activityA = (a.healthMetrics?.messagesPerDay || 0) + (a.healthMetrics?.eventsPerMonth || 0) * 2;
             const activityB = (b.healthMetrics?.messagesPerDay || 0) + (b.healthMetrics?.eventsPerMonth || 0) * 2;
             return activityB - activityA;
         } else {
-            // Default: Best Match (Final Score)
             return b.finalScore - a.finalScore;
         }
     });
@@ -265,13 +280,13 @@ function calculateTimeOverlapScore(group, user) {
  * Distance Score: Normalized by radius
  */
 function calculateDistanceScore(distance, userRadius, isInRadius) {
+    if (!isFinite(distance) || distance < 0) return 0; // Infinity or invalid
+
     if (distance <= 0) return 1;
 
     if (isInRadius) {
-        // Linear decay within radius: 1.0 at 0km, 0.0 at radius
         return Math.max(0, 1 - (distance / userRadius));
     } else {
-        // Out of radius: decay from radius to 2× radius
         const maxDistance = userRadius * 2;
         return Math.max(0, 1 - (distance - userRadius) / (maxDistance - userRadius));
     }

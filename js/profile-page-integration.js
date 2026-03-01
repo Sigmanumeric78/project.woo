@@ -57,11 +57,8 @@ class ProfilePageIntegration {
             // Update avatar
             const avatar = document.getElementById('profile-avatar');
             if (avatar) {
-                // Use UI Avatars API for consistent placeholder
                 const displayName = profile.displayName || profile.email || 'User';
-                const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff&size=120`;
-
                 avatar.src = profile.photoURL || fallbackUrl;
                 avatar.alt = displayName;
             }
@@ -74,20 +71,60 @@ class ProfilePageIntegration {
 
             // Update bio
             const bioEl = document.getElementById('profile-bio');
-            if (bioEl) {
-                bioEl.textContent = profile.bio || 'No bio yet.';
-            }
+            if (bioEl) bioEl.textContent = profile.bio || 'No bio yet.';
 
-            // Also update extended bio if element exists
             const extendedBioEl = document.getElementById('profile-extended-bio');
-            if (extendedBioEl) {
-                extendedBioEl.textContent = profile.bio || 'No bio yet.';
+            if (extendedBioEl) extendedBioEl.textContent = profile.bio || 'No bio yet.';
+
+            // ---- Location sidebar pill (correct element ID is 'profile-location') ----
+            const locationEl = document.getElementById('profile-location');
+            if (locationEl && profile.location) {
+                const city = profile.location.city || profile.location.district || '';
+                const state = profile.location.state || '';
+                const pinCode = profile.location.pinCode || '';
+                if (city || state) {
+                    locationEl.textContent = [city, state].filter(Boolean).join(', ');
+                } else if (pinCode) {
+                    locationEl.textContent = `Pincode: ${pinCode}`;
+                } else {
+                    locationEl.textContent = 'Location not set';
+                }
             }
 
-            // Update location
-            const locationEl = document.getElementById('profile-location-pill');
-            if (locationEl && profile.location) {
-                locationEl.textContent = `${profile.location.city || 'Unknown'}, ${profile.location.state || ''}`;
+            // ---- Preferences tab: Location input ----
+            const locationInput = document.getElementById('location-input');
+            if (locationInput && profile.location) {
+                const city = profile.location.city || profile.location.district || '';
+                const state = profile.location.state || '';
+                const pinCode = profile.location.pinCode || '';
+                // Build a human-readable address from whatever we have
+                const parts = [city, state].filter(Boolean);
+                if (pinCode) parts.push(pinCode);
+                locationInput.value = parts.length > 0 ? parts.join(', ') : '';
+                console.log('📍 Set location input to:', locationInput.value);
+            }
+
+            // ---- Preferences tab: Radius slider ----
+            const savedRadius = profile.preferences?.radius;
+            if (savedRadius) {
+                const radiusSlider = document.getElementById('pref-radius-slider');
+                const radiusLabel = document.getElementById('pref-radius-label');
+                if (radiusSlider) {
+                    radiusSlider.value = savedRadius;
+                    // Live update label as user drags slider
+                    if (!radiusSlider._listenerAdded) {
+                        radiusSlider.addEventListener('input', () => {
+                            const lbl = document.getElementById('pref-radius-label');
+                            if (lbl) lbl.textContent = `${radiusSlider.value} km`;
+                        });
+                        radiusSlider._listenerAdded = true;
+                    }
+                }
+                if (radiusLabel) radiusLabel.textContent = `${savedRadius} km`;
+                // Sidebar pill
+                const radiusPill = document.getElementById('profile-radius');
+                if (radiusPill) radiusPill.textContent = `Radius: ${savedRadius} km`;
+                console.log('📏 Set radius to:', savedRadius, 'km');
             }
 
             // Update availability
@@ -98,26 +135,16 @@ class ProfilePageIntegration {
             }
 
             // Update stats
-            const statsEls = {
-                joined: document.getElementById('profile-groups-joined'),
-                created: document.getElementById('profile-groups-created'),
-                activities: document.getElementById('profile-upcoming-activities')
-            };
+            if (document.getElementById('profile-groups-joined'))
+                document.getElementById('profile-groups-joined').textContent = profile.stats?.joinedGroups || 0;
+            if (document.getElementById('profile-groups-created'))
+                document.getElementById('profile-groups-created').textContent = profile.stats?.createdGroups || 0;
+            if (document.getElementById('profile-upcoming-activities'))
+                document.getElementById('profile-upcoming-activities').textContent = profile.stats?.upcomingActivities || 0;
 
-            if (statsEls.joined) statsEls.joined.textContent = profile.stats?.joinedGroups || 0;
-            if (statsEls.created) statsEls.created.textContent = profile.stats?.createdGroups || 0;
-            if (statsEls.activities) statsEls.activities.textContent = profile.stats?.upcomingActivities || 0;
-
-            // Update stats container
             this.updateStats(profile.stats || {});
-
-            // Update interests
             this.updateInterests(profile.interests || []);
-
-            // Update availability details
             this.updateAvailabilityDetails(profile.availability || []);
-
-            // Update social links
             this.updateSocialLinks(profile.socialLinks || {});
 
             console.log('✅ UI updated with profile data');

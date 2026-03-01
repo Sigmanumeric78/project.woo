@@ -63,6 +63,11 @@ async function prefillUserLocation(userId) {
                 stateInput.value = profile.location.state;
             }
 
+            const pincodeInput = document.getElementById('group-pincode');
+            if (pincodeInput && profile.location.pinCode) {
+                pincodeInput.value = profile.location.pinCode;
+            }
+
             console.log('✅ Pre-filled location from profile');
         }
     } catch (error) {
@@ -97,22 +102,30 @@ async function handleCreateGroup(userId) {
         // Get user profile for location coordinates
         const profile = await profileService.getUserProfile(userId);
 
-        // Determine coordinates based on input or profile
-        let coordinates = { lat: 28.6139, lng: 77.2090 }; // Default Delhi
+        // Determine coordinates — priority:
+        //   1. Creator's GPS coordinates (captured during profile setup geolocation)
+        //   2. Creator's stored lat/lng
+        //   3. City-name lookup table
+        //   4. Delhi default
+        let coordinates = null;
 
-        // 1. Try to get coordinates from profile if city matches AND coords are valid
-        if (profile?.location?.city?.toLowerCase() === formData.city.toLowerCase() &&
-            profile?.location?.coordinates &&
-            profile.location.coordinates.lat &&
-            profile.location.coordinates.lng) {
-            console.log('✅ Using profile coordinates');
-            coordinates = profile.location.coordinates;
-        }
-        // 2. Look up coordinates based on Pincode (if avaliable) or City
-        else {
-            console.log('🌍 looking up coordinates for city:', formData.city);
-            // Simple fallback: use the same lookup map as dashboard
-            // In a real app, this would use a Geocoding API
+        if (profile?.location?.latitude && profile?.location?.longitude) {
+            // Best case: real GPS from profile-setup geolocation step
+            coordinates = {
+                lat: parseFloat(profile.location.latitude),
+                lng: parseFloat(profile.location.longitude)
+            };
+            console.log('✅ Using creator GPS coordinates:', coordinates);
+        } else if (profile?.location?.lat && profile?.location?.lng) {
+            // Stored as lat/lng directly
+            coordinates = {
+                lat: parseFloat(profile.location.lat),
+                lng: parseFloat(profile.location.lng)
+            };
+            console.log('✅ Using creator stored lat/lng:', coordinates);
+        } else {
+            // Fall back to city lookup
+            console.log('🌍 Looking up coordinates for city:', formData.city);
             coordinates = getCoordinatesForCity(formData.city);
         }
 
@@ -130,6 +143,7 @@ async function handleCreateGroup(userId) {
             location: {
                 city: formData.city,
                 state: formData.state,
+                pinCode: formData.pinCode,
                 coordinates: coordinates
             },
             tags: formData.tags,
@@ -177,6 +191,7 @@ function collectFormData() {
         category: document.getElementById('group-category').value,
         city: document.getElementById('group-city').value.trim(),
         state: document.getElementById('group-state').value.trim(),
+        pinCode: document.getElementById('group-pincode')?.value.trim() || '',
         scheduleDay: document.getElementById('schedule-day').value,
         scheduleTime: document.getElementById('schedule-time').value,
         scheduleRecurring: document.getElementById('schedule-recurring').checked,

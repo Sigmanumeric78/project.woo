@@ -51,6 +51,7 @@ class GroupService {
                 location: {
                     city: groupData.location?.city || '',
                     state: groupData.location?.state || '',
+                    pinCode: groupData.location?.pinCode || '',
                     coordinates: groupData.location?.coordinates || null
                 },
 
