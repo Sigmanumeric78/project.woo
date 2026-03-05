@@ -529,6 +529,96 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Saved Slot Cards */
+        .saved-slot-card {
+            background: var(--surface-50);
+            border: 1px solid var(--surface-200);
+            border-radius: var(--radius-md);
+            padding: var(--space-12) var(--space-16);
+            margin-bottom: var(--space-12);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .saved-slot-card .slot-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .saved-slot-card .slot-days {
+            font-weight: 600;
+            color: var(--base-white);
+            font-size: var(--text-sm);
+        }
+
+        .saved-slot-card .slot-time {
+            font-size: var(--text-xs);
+            color: var(--text-description);
+        }
+
+        .saved-slot-card .remove-slot-btn {
+            background: none;
+            border: none;
+            color: var(--error, #ef4444);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .saved-slot-card .remove-slot-btn:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .add-slot-btn {
+            width: 100%;
+            padding: var(--space-12);
+            background: var(--surface-50);
+            border: 2px dashed var(--primary-500);
+            border-radius: var(--radius-md);
+            color: var(--primary-500);
+            font-weight: 600;
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: var(--space-16);
+        }
+
+        .add-slot-btn:hover {
+            background: rgba(56, 189, 248, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Language/Gender checkbox styles */
+        .pref-checkbox-grid {
+            display: grid;
+            gap: var(--space-12);
+        }
+
+        .pref-checkbox-label {
+            display: flex;
+            align-items: center;
+            padding: var(--space-12);
+            background: var(--surface-50);
+            border: 2px solid var(--surface-200);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pref-checkbox-label:hover {
+            border-color: var(--primary-400, #38bdf8);
+        }
+
+        .pref-checkbox-label.checked {
+            border-color: var(--primary-500);
+            background: rgba(56, 189, 248, 0.08);
+        }
     </style>
 </head>
 
@@ -597,80 +687,91 @@
             <!-- Step 2: Availability -->
             <div class="step-container" id="step2">
                 <h2 class="step-title">When are you available?</h2>
-                <p class="step-description">Select the days and times when you're free. Choose at least one day and one
-                    time slot.</p>
+                <p class="step-description">Add one or more time slots. Select days, a time, and click "Add Time Slot".
+                </p>
+
+                <!-- Saved Slots Display -->
+                <div id="saved-slots-container" style="margin-bottom: var(--space-16);"></div>
 
                 <div id="availabilityContent">
-                    <h3 style="font-size: var(--text-base); margin-bottom: var(--space-12); color: var(--base-white);">
-                        Select Days
-                    </h3>
-                    <div class="weekday-chips" id="weekdayChips"></div>
+                    <!-- Slot Form -->
+                    <div id="slot-form">
+                        <h3
+                            style="font-size: var(--text-base); margin-bottom: var(--space-12); color: var(--base-white);">
+                            Select Days
+                        </h3>
+                        <div class="weekday-chips" id="weekdayChips"></div>
 
-                    <h3
-                        style="font-size: var(--text-base); margin-bottom: var(--space-12); color: var(--base-white); margin-top: var(--space-24);">
-                        Select Time Slots
-                    </h3>
-                    <div class="time-slots" id="timeSlots"></div>
+                        <h3
+                            style="font-size: var(--text-base); margin-bottom: var(--space-12); color: var(--base-white); margin-top: var(--space-24);">
+                            Select Time Slots
+                        </h3>
+                        <div class="time-slots" id="timeSlots"></div>
 
-                    <!-- Custom Time Range -->
-                    <h3
-                        style="font-size: var(--text-base); margin-bottom: var(--space-12); color: var(--base-white); margin-top: var(--space-24);">
-                        Or Set Custom Time Range (Optional)
-                    </h3>
-                    <div
-                        style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16); margin-bottom: var(--space-16);">
-                        <!-- From Time -->
-                        <div>
-                            <label class="label">From</label>
-                            <div style="display: flex; gap: var(--space-8); align-items: center;">
-                                <input type="text" class="input" id="customTimeFrom" placeholder="09:00"
-                                    style="flex: 1;" maxlength="5">
-                                <div style="display: flex; gap: 4px;">
-                                    <button type="button" class="time-period-btn" id="fromAM"
-                                        style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
-                                        AM
-                                    </button>
-                                    <button type="button" class="time-period-btn" id="fromPM"
-                                        style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
-                                        PM
-                                    </button>
+                        <!-- Custom Time Range -->
+                        <h3
+                            style="font-size: var(--text-base); margin-bottom: var(--space-12); color: var(--base-white); margin-top: var(--space-24);">
+                            Or Set Custom Time Range (Optional)
+                        </h3>
+                        <div
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16); margin-bottom: var(--space-16);">
+                            <!-- From Time -->
+                            <div>
+                                <label class="label">From</label>
+                                <div style="display: flex; gap: var(--space-8); align-items: center;">
+                                    <input type="text" class="input" id="customTimeFrom" placeholder="09:00"
+                                        style="flex: 1;" maxlength="5">
+                                    <div style="display: flex; gap: 4px;">
+                                        <button type="button" class="time-period-btn" id="fromAM"
+                                            style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
+                                            AM
+                                        </button>
+                                        <button type="button" class="time-period-btn" id="fromPM"
+                                            style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
+                                            PM
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- To Time -->
+                            <div>
+                                <label class="label">To</label>
+                                <div style="display: flex; gap: var(--space-8); align-items: center;">
+                                    <input type="text" class="input" id="customTimeTo" placeholder="05:00"
+                                        style="flex: 1;" maxlength="5">
+                                    <div style="display: flex; gap: 4px;">
+                                        <button type="button" class="time-period-btn" id="toAM"
+                                            style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
+                                            AM
+                                        </button>
+                                        <button type="button" class="time-period-btn" id="toPM"
+                                            style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
+                                            PM
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- To Time -->
-                        <div>
-                            <label class="label">To</label>
-                            <div style="display: flex; gap: var(--space-8); align-items: center;">
-                                <input type="text" class="input" id="customTimeTo" placeholder="05:00" style="flex: 1;"
-                                    maxlength="5">
-                                <div style="display: flex; gap: 4px;">
-                                    <button type="button" class="time-period-btn" id="toAM"
-                                        style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
-                                        AM
-                                    </button>
-                                    <button type="button" class="time-period-btn" id="toPM"
-                                        style="padding: 8px 12px; background: var(--surface-200); border: 1px solid var(--surface-300); border-radius: 4px; color: var(--text-muted); cursor: pointer; font-size: var(--text-sm); transition: all 0.2s;">
-                                        PM
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <p style="font-size: var(--text-xs); color: var(--text-muted); margin-bottom: var(--space-16);">
-                        💡 Custom time range will override the selected time slots above
-                    </p>
-
-                    <div class="recurring-toggle">
-                        <div class="toggle-header">
-                            <span class="toggle-label">Availability Pattern</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="recurringToggle" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <p class="toggle-description" id="recurringDescription">
-                            This availability repeats every week
+                        <p style="font-size: var(--text-xs); color: var(--text-muted); margin-bottom: var(--space-16);">
+                            💡 Custom time range will override the selected time slots above
                         </p>
+
+                        <div class="recurring-toggle">
+                            <div class="toggle-header">
+                                <span class="toggle-label">Availability Pattern</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="recurringToggle" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="toggle-description" id="recurringDescription">
+                                This availability repeats every week
+                            </p>
+                        </div>
+
+                        <!-- Add Slot Button -->
+                        <button type="button" class="add-slot-btn" id="addSlotBtn"
+                            style="margin-top: var(--space-16);">+ Add Time Slot</button>
                     </div>
                 </div>
 
@@ -753,44 +854,71 @@
                         </div>
                     </div>
 
-                    <!-- Preferred Language -->
+                    <!-- Preferred Language (multi-select) -->
                     <div style="margin-bottom: var(--space-24);">
-                        <label class="label">Preferred Language *</label>
-                        <select class="input" id="language" required>
-                            <option value="">Select language</option>
-                            <option value="English">English</option>
-                            <option value="Hindi">Hindi</option>
-                            <option value="Spanish">Spanish</option>
-                            <option value="French">French</option>
-                            <option value="German">German</option>
-                            <option value="Mandarin">Mandarin</option>
-                            <option value="Arabic">Arabic</option>
-                        </select>
+                        <label class="label">Preferred Languages * <small
+                                style="color: var(--text-muted); font-weight: 400;">(select one or more)</small></label>
+                        <div class="pref-checkbox-grid" id="languageCheckboxes">
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="languages" value="English"
+                                    style="margin-right: var(--space-12);">
+                                <span>English</span>
+                            </label>
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="languages" value="Hindi"
+                                    style="margin-right: var(--space-12);">
+                                <span>Hindi</span>
+                            </label>
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="languages" value="Spanish"
+                                    style="margin-right: var(--space-12);">
+                                <span>Spanish</span>
+                            </label>
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="languages" value="French"
+                                    style="margin-right: var(--space-12);">
+                                <span>French</span>
+                            </label>
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="languages" value="German"
+                                    style="margin-right: var(--space-12);">
+                                <span>German</span>
+                            </label>
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="languages" value="Mandarin"
+                                    style="margin-right: var(--space-12);">
+                                <span>Mandarin</span>
+                            </label>
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="languages" value="Arabic"
+                                    style="margin-right: var(--space-12);">
+                                <span>Arabic</span>
+                            </label>
+                        </div>
                     </div>
 
-                    <!-- Preferred Gender -->
+                    <!-- Preferred Gender (multi-select) -->
                     <div>
-                        <label class="label">Preferred Gender *</label>
-                        <div style="display: grid; gap: var(--space-12);">
-                            <label
-                                style="display: flex; align-items: center; padding: var(--space-12); background: var(--surface-50); border: 2px solid var(--surface-200); border-radius: var(--radius-md); cursor: pointer;">
-                                <input type="radio" name="gender" value="Any" style="margin-right: var(--space-12);"
-                                    required>
+                        <label class="label">Preferred Gender * <small
+                                style="color: var(--text-muted); font-weight: 400;">(select one or more)</small></label>
+                        <div class="pref-checkbox-grid" id="genderCheckboxes">
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="genders" value="Any"
+                                    style="margin-right: var(--space-12);">
                                 <span>Any</span>
                             </label>
-                            <label
-                                style="display: flex; align-items: center; padding: var(--space-12); background: var(--surface-50); border: 2px solid var(--surface-200); border-radius: var(--radius-md); cursor: pointer;">
-                                <input type="radio" name="gender" value="Male" style="margin-right: var(--space-12);">
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="genders" value="Male"
+                                    style="margin-right: var(--space-12);">
                                 <span>Male</span>
                             </label>
-                            <label
-                                style="display: flex; align-items: center; padding: var(--space-12); background: var(--surface-50); border: 2px solid var(--surface-200); border-radius: var(--radius-md); cursor: pointer;">
-                                <input type="radio" name="gender" value="Female" style="margin-right: var(--space-12);">
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="genders" value="Female"
+                                    style="margin-right: var(--space-12);">
                                 <span>Female</span>
                             </label>
-                            <label
-                                style="display: flex; align-items: center; padding: var(--space-12); background: var(--surface-50); border: 2px solid var(--surface-200); border-radius: var(--radius-md); cursor: pointer;">
-                                <input type="radio" name="gender" value="Non-binary"
+                            <label class="pref-checkbox-label">
+                                <input type="checkbox" name="genders" value="Non-binary"
                                     style="margin-right: var(--space-12);">
                                 <span>Non-binary</span>
                             </label>
@@ -911,11 +1039,14 @@
             },
             preferences: {
                 radius: 5,
-                language: '',
-                gender: ''
+                language: [],   // multi-select array
+                gender: []      // multi-select array
             },
             bio: ''
         };
+
+        // Multi-slot availability storage
+        let availabilitySlots = [];
 
         // Emoji map for each interest
         const interestEmojis = {
@@ -1261,13 +1392,116 @@
 
         // Validate Step 2
         function validateStep2() {
+            const hasSavedSlots = availabilitySlots.length > 0;
+
+            // Current form validity
+            const hasDays = profileData.availability.days.length > 0;
+            const hasTimeSlots = profileData.availability.timeSlots.length > 0;
+            const hasCustomTime = profileData.availability.customTimeRange.from && profileData.availability.customTimeRange.to;
+            const formIsValid = hasDays && (hasTimeSlots || hasCustomTime);
+
+            // Enable next if there are saved slots OR the current form is valid
+            document.getElementById('nextBtn2').disabled = !(hasSavedSlots || formIsValid);
+        }
+
+        // ========== Multi-Slot Functions ==========
+
+        function addSlot() {
             const hasDays = profileData.availability.days.length > 0;
             const hasTimeSlots = profileData.availability.timeSlots.length > 0;
             const hasCustomTime = profileData.availability.customTimeRange.from && profileData.availability.customTimeRange.to;
 
-            // Enable next if user has selected days AND (time slots OR custom time range)
-            document.getElementById('nextBtn2').disabled = !(hasDays && (hasTimeSlots || hasCustomTime));
+            if (!hasDays || (!hasTimeSlots && !hasCustomTime)) {
+                alert('Please select at least one day and a time slot or custom time range before adding.');
+                return;
+            }
+
+            // Build the slot object
+            const slot = {
+                days: [...profileData.availability.days],
+                timeSlots: [...profileData.availability.timeSlots],
+                customTimeRange: { ...profileData.availability.customTimeRange },
+                recurring: profileData.availability.recurring
+            };
+
+            availabilitySlots.push(slot);
+            renderSavedSlots();
+            resetSlotForm();
+            validateStep2();
         }
+
+        function removeSlot(index) {
+            availabilitySlots.splice(index, 1);
+            renderSavedSlots();
+            validateStep2();
+        }
+
+        function renderSavedSlots() {
+            const container = document.getElementById('saved-slots-container');
+            if (availabilitySlots.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = availabilitySlots.map((slot, i) => {
+                const daysText = slot.days.join(', ');
+                let timeText;
+                if (slot.customTimeRange.from && slot.customTimeRange.to) {
+                    timeText = `${slot.customTimeRange.from} – ${slot.customTimeRange.to}`;
+                } else {
+                    timeText = slot.timeSlots.join(', ');
+                }
+                const recurText = slot.recurring ? '🔁 Weekly' : 'One-time';
+                return `
+                    <div class="saved-slot-card">
+                        <div class="slot-info">
+                            <span class="slot-days">${daysText}</span>
+                            <span class="slot-time">${timeText} · ${recurText}</span>
+                        </div>
+                        <button type="button" class="remove-slot-btn" onclick="removeSlot(${i})" title="Remove slot">✕</button>
+                    </div>`;
+            }).join('');
+        }
+
+        function resetSlotForm() {
+            // Reset state
+            profileData.availability.days = [];
+            profileData.availability.timeSlots = [];
+            profileData.availability.customTimeRange = { from: '', to: '' };
+            profileData.availability.recurring = true;
+
+            // Reset day chips
+            document.querySelectorAll('.weekday-chip').forEach(c => c.classList.remove('selected'));
+
+            // Reset time slot chips
+            document.querySelectorAll('.time-slot-chip').forEach(c => {
+                c.classList.remove('selected');
+                c.style.opacity = '1';
+                c.style.pointerEvents = 'auto';
+            });
+
+            // Reset custom time inputs
+            const customTimeFrom = document.getElementById('customTimeFrom');
+            const customTimeTo = document.getElementById('customTimeTo');
+            customTimeFrom.value = '';
+            customTimeTo.value = '';
+            customTimeFrom.disabled = false;
+            customTimeTo.disabled = false;
+            const container = customTimeFrom.parentElement.parentElement;
+            container.style.opacity = '1';
+            container.style.pointerEvents = 'auto';
+
+            // Reset recurring toggle
+            document.getElementById('recurringToggle').checked = true;
+            document.getElementById('recurringDescription').textContent = 'This availability repeats every week';
+        }
+
+        function initAddSlotButton() {
+            document.getElementById('addSlotBtn').addEventListener('click', addSlot);
+        }
+
+        // Make removeSlot available globally for onclick
+        window.removeSlot = removeSlot;
 
         // Initialize Step 3 (Location)
         function initLocationInputs() {
@@ -1405,30 +1639,52 @@
         function initPreferences() {
             const radiusSlider = document.getElementById('radiusSlider');
             const radiusValue = document.getElementById('radiusValue');
-            const language = document.getElementById('language');
-            const genderRadios = document.querySelectorAll('input[name="gender"]');
+            const languageCheckboxes = document.querySelectorAll('input[name="languages"]');
+            const genderCheckboxes = document.querySelectorAll('input[name="genders"]');
 
             radiusSlider.addEventListener('input', () => {
                 profileData.preferences.radius = parseInt(radiusSlider.value);
                 radiusValue.textContent = radiusSlider.value;
             });
 
-            language.addEventListener('change', () => {
-                profileData.preferences.language = language.value;
-                validateStep4();
+            // Language multi-select
+            languageCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const label = cb.closest('.pref-checkbox-label');
+                    if (cb.checked) {
+                        if (!profileData.preferences.language.includes(cb.value)) {
+                            profileData.preferences.language.push(cb.value);
+                        }
+                        label.classList.add('checked');
+                    } else {
+                        profileData.preferences.language = profileData.preferences.language.filter(v => v !== cb.value);
+                        label.classList.remove('checked');
+                    }
+                    validateStep4();
+                });
             });
 
-            genderRadios.forEach(radio => {
-                radio.addEventListener('change', () => {
-                    profileData.preferences.gender = radio.value;
+            // Gender multi-select
+            genderCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const label = cb.closest('.pref-checkbox-label');
+                    if (cb.checked) {
+                        if (!profileData.preferences.gender.includes(cb.value)) {
+                            profileData.preferences.gender.push(cb.value);
+                        }
+                        label.classList.add('checked');
+                    } else {
+                        profileData.preferences.gender = profileData.preferences.gender.filter(v => v !== cb.value);
+                        label.classList.remove('checked');
+                    }
                     validateStep4();
                 });
             });
         }
 
         function validateStep4() {
-            const hasLanguage = profileData.preferences.language !== '';
-            const hasGender = profileData.preferences.gender !== '';
+            const hasLanguage = profileData.preferences.language.length > 0;
+            const hasGender = profileData.preferences.gender.length > 0;
             document.getElementById('nextBtn4').disabled = !(hasLanguage && hasGender);
         }
 
@@ -1519,11 +1775,36 @@
                 return;
             }
 
-            // Format availability data
-            const availabilityData = profileData.availability.days.map(day => ({
-                day: day,
-                slots: profileData.availability.timeSlots
-            }));
+            // Auto-add current form if it has valid data and hasn't been added yet
+            const hasDays = profileData.availability.days.length > 0;
+            const hasTimeSlots = profileData.availability.timeSlots.length > 0;
+            const hasCustomTime = profileData.availability.customTimeRange.from && profileData.availability.customTimeRange.to;
+            if (hasDays && (hasTimeSlots || hasCustomTime)) {
+                addSlot();
+            }
+
+            // Flatten all saved slots into [{day, slots}] format for Firestore
+            // This preserves backward compatibility with profile/discover pages
+            const availabilityData = [];
+            availabilitySlots.forEach(slot => {
+                const slotsArray = (slot.customTimeRange.from && slot.customTimeRange.to)
+                    ? [`${slot.customTimeRange.from}-${slot.customTimeRange.to}`]
+                    : slot.timeSlots;
+
+                slot.days.forEach(day => {
+                    // Check if we already have this day in the array
+                    const existing = availabilityData.find(a => a.day === day);
+                    if (existing) {
+                        // Merge slots
+                        existing.slots = [...new Set([...existing.slots, ...slotsArray])];
+                    } else {
+                        availabilityData.push({
+                            day: day,
+                            slots: [...slotsArray]
+                        });
+                    }
+                });
+            });
 
             profileSetupIntegration.setButtonLoading(button, true);
             const success = await profileSetupIntegration.saveStep2(availabilityData);
@@ -1604,6 +1885,7 @@
         initTimeSlots();
         initRecurringToggle();
         initCustomTimeInputs();
+        initAddSlotButton();
         initLocationInputs();
         initPreferences();
         initOptionalDetails();
