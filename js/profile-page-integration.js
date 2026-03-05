@@ -171,23 +171,13 @@ class ProfilePageIntegration {
      * @param {Object} stats - Stats object
      */
     updateStats(stats) {
-        const statsContainer = document.getElementById('profile-stats');
-        if (!statsContainer) return;
+        const joinedEl = document.getElementById('profile-groups-joined');
+        const createdEl = document.getElementById('profile-groups-created');
+        const activitiesEl = document.getElementById('profile-upcoming-activities');
 
-        statsContainer.innerHTML = `
-            <div class="stat-item">
-                <div class="stat-value">${stats.joinedGroups || 0}</div>
-                <div class="stat-label">Groups Joined</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">${stats.createdGroups || 0}</div>
-                <div class="stat-label">Groups Created</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">${stats.upcomingActivities || 0}</div>
-                <div class="stat-label">Upcoming</div>
-            </div>
-        `;
+        if (joinedEl) joinedEl.textContent = stats.joinedGroups || 0;
+        if (createdEl) createdEl.textContent = stats.createdGroups || 0;
+        if (activitiesEl) activitiesEl.textContent = stats.upcomingActivities || 0;
     }
 
     /**
@@ -610,10 +600,13 @@ class ProfilePageIntegration {
                 { field: 'createdBy', operator: '==', value: this.currentProfile.uid }
             ]);
 
+            const joinedCount = joinedGroups?.length || 0;
+            const createdCount = createdGroups?.length || 0;
+
             const stats = {
-                joinedGroups: joinedGroups?.length || 0,
-                createdGroups: createdGroups?.length || 0,
-                upcomingActivities: 0 // TODO: Implement when activities are added
+                joinedGroups: joinedCount,
+                createdGroups: createdCount,
+                upcomingActivities: joinedCount  // Joining a group counts as an activity
             };
 
             // Update in Firestore

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile | SocialSpaces</title>
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .interest-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 2px solid var(--surface-200);
+            border-radius: var(--radius-full);
+            background: var(--surface-50);
+            color: var(--text-description);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: var(--text-sm);
+            user-select: none;
+        }
+
+        .interest-chip:hover {
+            border-color: var(--primary-400, #38bdf8);
+        }
+
+        .interest-chip.selected {
+            border-color: var(--primary-500);
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--base-white);
+        }
+
+        .interest-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .section-card {
+            background: var(--surface-50);
+            padding: var(--space-16);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-24);
+        }
+
+        .section-card h4 {
+            margin-bottom: var(--space-16);
+            color: var(--base-white);
+        }
+
+        .weekday-chip-edit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: 2px solid var(--surface-200);
+            border-radius: 50%;
+            background: var(--surface-50);
+            color: var(--text-description);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        .weekday-chip-edit.selected {
+            border-color: var(--primary-500);
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--base-white);
+        }
+
+        .time-chip-edit {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border: 2px solid var(--surface-200);
+            border-radius: var(--radius-full);
+            background: var(--surface-50);
+            color: var(--text-description);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: var(--text-sm);
+            user-select: none;
+        }
+
+        .time-chip-edit.selected {
+            border-color: var(--primary-500);
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--base-white);
+        }
+
+        .pref-checkbox-label {
+            display: flex;
+            align-items: center;
+            padding: var(--space-12);
+            background: var(--surface-50);
+            border: 2px solid var(--surface-200);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pref-checkbox-label:hover {
+            border-color: var(--primary-400, #38bdf8);
+        }
+
+        .pref-checkbox-label.checked {
+            border-color: var(--primary-500);
+            background: rgba(56, 189, 248, 0.08);
+        }
+    </style>
+</head>
+
+<body>
+    <nav
+        style="padding: var(--space-16); border-bottom: 1px solid var(--surface-200); display: flex; align-items: center; gap: var(--space-24);">
+        <span style="font-family: 'Anurati', sans-serif; font-size: 20px; color: var(--base-white);">SocialSpaces</span>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: var(--space-8);">
+            <button id="dark-mode-toggle" class="btn btn-ghost" style="font-size: 14px;">☀️ Light Mode</button>
+            <a href="profile.html" class="btn btn-ghost">← Back to Profile</a>
+        </div>
+    </nav>
+
+    <main style="max-width: 800px; margin: 0 auto; padding: var(--space-32) var(--space-16);">
+        <h1>Edit Profile</h1>
+        <p style="color: var(--text-muted); margin-bottom: var(--space-24);">Update your profile information below. All
+            changes are saved instantly.</p>
+
+        <div id="loading-state" style="text-align: center; padding: 48px; color: var(--text-muted);">
+            Loading profile data...
+        </div>
+
+        <form id="edit-profile-form" style="display: none; gap: var(--space-24);">
+
+            <!-- Basic Info -->
+            <div class="section-card">
+                <h4>👤 Basic Info</h4>
+                <div class="form-group" style="margin-bottom: var(--space-16);">
+                    <label class="label">Display Name *</label>
+                    <input type="text" id="edit-displayName" class="input" placeholder="Your full name" required>
+                </div>
+                <div class="form-group">
+                    <label class="label">Bio</label>
+                    <textarea id="edit-bio" class="input" rows="3"
+                        placeholder="Tell people about yourself..."></textarea>
+                </div>
+            </div>
+
+            <!-- Interests -->
+            <div class="section-card">
+                <h4>🎯 Interests & Skills</h4>
+                <p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-12);">Select
+                    your interests (click to toggle)</p>
+                <div class="interest-grid" id="edit-interests-grid"></div>
+            </div>
+
+            <!-- Availability -->
+            <div class="section-card">
+                <h4>📅 Availability</h4>
+                <p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-12);">Select
+                    the days and time slots when you're available</p>
+
+                <label class="label" style="margin-bottom: 8px;">Days</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: var(--space-16);"
+                    id="edit-weekdays"></div>
+
+                <label class="label" style="margin-bottom: 8px;">Time Slots</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="edit-timeslots"></div>
+            </div>
+
+            <!-- Location -->
+            <div class="section-card">
+                <h4>📍 Location</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-16);">
+                    <div class="form-group">
+                        <label class="label">City</label>
+                        <input type="text" id="edit-city" class="input" placeholder="e.g. Bengaluru">
+                    </div>
+                    <div class="form-group">
+                        <label class="label">State</label>
+                        <input type="text" id="edit-state" class="input" placeholder="e.g. Karnataka">
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Pincode</label>
+                        <input type="text" id="edit-pincode" class="input" placeholder="e.g. 560001" maxlength="6">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences -->
+            <div class="section-card">
+                <h4>⚙️ Preferences</h4>
+
+                <div class="form-group" style="margin-bottom: var(--space-16);">
+                    <label class="label">Search Radius: <span id="edit-radius-value">10</span> km</label>
+                    <input type="range" id="edit-radius" min="1" max="50" value="10" class="input"
+                        style="padding: 4px; cursor: pointer;">
+                </div>
+
+                <div style="margin-bottom: var(--space-16);">
+                    <label class="label" style="margin-bottom: 8px;">Preferred Languages <small
+                            style="color: var(--text-muted); font-weight: 400;">(select one or more)</small></label>
+                    <div style="display: grid; gap: var(--space-8);" id="edit-languages"></div>
+                </div>
+
+                <div>
+                    <label class="label" style="margin-bottom: 8px;">Preferred Gender <small
+                            style="color: var(--text-muted); font-weight: 400;">(select one or more)</small></label>
+                    <div style="display: grid; gap: var(--space-8);" id="edit-genders"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Save All Changes</button>
+        </form>
+    </main>
+
+    <script type="module" src="../js/edit-profile-integration.js"></script>
+    <script type="module">
+        import { initDarkModeToggle } from '../js/dark-mode.js';
+        initDarkModeToggle();
+    </script>
+</body>
+
+</html>
