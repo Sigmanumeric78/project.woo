@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Group | SocialSpaces</title>
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -15,7 +17,10 @@
     <nav
         style="padding: var(--space-16); border-bottom: 1px solid var(--surface-200); display: flex; align-items: center; gap: var(--space-24);">
         <span style="font-family: 'Anurati', sans-serif; font-size: 20px; color: var(--base-white);">SocialSpaces</span>
-        <a href="profile.html" class="btn btn-ghost" style="margin-left: auto;">← Back to Profile</a>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: var(--space-8);">
+            <button id="dark-mode-toggle" class="btn btn-ghost" style="font-size: 14px;">☀️ Light Mode</button>
+            <a href="profile.html" class="btn btn-ghost">← Back to Profile</a>
+        </div>
     </nav>
 
     <main style="max-width: 800px; margin: 0 auto; padding: var(--space-32) var(--space-16);">
@@ -171,6 +176,10 @@
     </main>
 
     <script type="module" src="../js/edit-group-integration.js"></script>
+    <script type="module">
+        import { initDarkModeToggle } from '../js/dark-mode.js';
+        initDarkModeToggle();
+    </script>
 </body>
 
 </html>

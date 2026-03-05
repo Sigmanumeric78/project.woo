@@ -17,8 +17,28 @@ auth.onAuthStateChanged(async (user) => {
     // Load profile data
     await profilePageIntegration.loadProfileData(user.uid);
 
+    // Patch displayName from Firebase Auth if missing in Firestore profile
+    if (profilePageIntegration.currentProfile && !profilePageIntegration.currentProfile.displayName) {
+        const authName = user.displayName;
+        if (authName) {
+            profilePageIntegration.currentProfile.displayName = authName;
+            profilePageIntegration.updateProfileUI(profilePageIntegration.currentProfile);
+        }
+    }
+
     // Calculate stats
     await profilePageIntegration.calculateStats();
+
+    // Update nav-avatar with proper initials
+    const navAvatar = document.getElementById('nav-avatar');
+    if (navAvatar) {
+        const name = profilePageIntegration.currentProfile?.displayName || user.displayName || user.email || 'User';
+        const parts = name.trim().split(/\s+/);
+        const initials = parts.length >= 2
+            ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+            : name.substring(0, 2).toUpperCase();
+        navAvatar.textContent = initials;
+    }
 
     // Setup all UI features
     setupTabs();

@@ -133,6 +133,33 @@ function getCoordinatesFromPincode(pincode) {
     return fallback[String(pincode)] || null;
 }
 
+/**
+ * Get initials from a display name: first letter of first name + first letter of last name.
+ * Falls back to first two letters of name if only one word.
+ * @param {string} name - Full display name
+ * @returns {string} Initials (2 characters)
+ */
+function getInitials(name) {
+    if (!name || typeof name !== 'string') return '??';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+}
+
+/**
+ * Update the navbar avatar badge with the user's initials
+ */
+function updateNavAvatar(profile) {
+    const navAvatar = document.getElementById('nav-avatar');
+    if (navAvatar) {
+        const authUser = auth.currentUser;
+        const name = profile?.displayName || authUser?.displayName || profile?.email || authUser?.email || 'User';
+        navAvatar.textContent = getInitials(name);
+    }
+}
+
 export async function initDashboardFilters() {
     console.log('🎯 === STARTING DASHBOARD INITIALIZATION ===');
 
@@ -150,6 +177,9 @@ export async function initDashboardFilters() {
         // Load user profile
         currentUser = await profileService.getUserProfile(user.uid);
         console.log('✅ User profile loaded (raw):', JSON.stringify(currentUser, null, 2));
+
+        // Update nav avatar with user's initials
+        updateNavAvatar(currentUser);
 
         // Transform profile for ranking engine compatibility
         currentUser = transformUserProfile(currentUser);

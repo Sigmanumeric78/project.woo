@@ -54,19 +54,32 @@ class ProfilePageIntegration {
         try {
             console.log('🔄 Updating UI with profile:', profile);
 
+            // Resolve displayName: Firestore profile → Firebase Auth → email → fallback
+            const authUser = auth.currentUser;
+            const resolvedName = profile.displayName || authUser?.displayName || profile.email || authUser?.email || 'User';
+
             // Update avatar
             const avatar = document.getElementById('profile-avatar');
             if (avatar) {
-                const displayName = profile.displayName || profile.email || 'User';
-                const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff&size=120`;
+                const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(resolvedName)}&background=0D8ABC&color=fff&size=120`;
                 avatar.src = profile.photoURL || fallbackUrl;
-                avatar.alt = displayName;
+                avatar.alt = resolvedName;
             }
 
             // Update name
             const nameEl = document.getElementById('profile-name');
             if (nameEl) {
-                nameEl.textContent = profile.displayName || profile.email || 'Anonymous User';
+                nameEl.textContent = resolvedName;
+            }
+
+            // Update nav-avatar initials
+            const navAvatar = document.getElementById('nav-avatar');
+            if (navAvatar) {
+                const parts = resolvedName.trim().split(/\s+/);
+                const initials = parts.length >= 2
+                    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+                    : resolvedName.substring(0, 2).toUpperCase();
+                navAvatar.textContent = initials;
             }
 
             // Update bio
