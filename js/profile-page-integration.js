@@ -597,7 +597,7 @@ class ProfilePageIntegration {
 
             // Count created groups
             const createdGroups = await firestoreService.queryDocuments('groups', [
-                { field: 'createdBy', operator: '==', value: this.currentProfile.uid }
+                { field: 'creatorId', operator: '==', value: this.currentProfile.uid }
             ]);
 
             const joinedCount = joinedGroups?.length || 0;
