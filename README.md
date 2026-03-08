@@ -79,7 +79,7 @@ SocialSpaces/
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/yourusername/eca-connect.git
+    git clone https://github.com/yourusername/SocialSpaces.git
     cd SocialSpaces
     ```
 
