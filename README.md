@@ -1,10 +1,10 @@
-# ECA-Connect 🌐
+# SocialSpaces
 
 > **Connect Real People in Real Time**
 
-**ECA-Connect** is a location-based social platform designed to solve the biggest problem in meeting new people: **Scheduling Conflicts**. Instead of just matching interests, ECA-Connect matches users who are free at the *exact same time*.
+**SocialSpaces** is a location-based social platform designed to solve the biggest problem in meeting new people: **Scheduling Conflicts**. Instead of just matching interests, SocialSpaces matches users who are free at the *exact same time*.
 
-Whether you're looking for a badminton partner for Saturday evening or a coding buddy for Sunday morning, ECA-Connect finds groups that fit your schedule and location.
+Whether you're looking for a badminton partner for Saturday evening or a coding buddy for Sunday morning, SocialSpaces finds groups that fit your schedule and location.
 
 ---
 
@@ -38,11 +38,10 @@ Our custom `ranking-engine.js` scores every potential group match based on a wei
 *   **Design**: Custom CSS design system (no external UI frameworks).
 
 ---
+## 📂 Project Architecture
 
-## 📂 Project Structure
-
-```bash
-ECA-Connect/
+```text
+SocialSpaces/
 ├── index.html              # Landing page
 ├── css/                    # Stylesheets
 │   └── styles.css          # Main variables & component styles
@@ -59,6 +58,11 @@ ECA-Connect/
 │   ├── profile.html        # User profile management
 │   ├── create-group.html   # Group creation wizard
 │   └── login/signup.html   # Auth pages
+├── extract_district_state.py # Python script for geodata extraction
+├── indian_pincode_data.js  # Processed geospatial data
+├── All_India_pincode_NO_GEOMETRY.json
+├── firebase.json           # Firebase hosting configuration
+├── firestore.indexes.json  # Database indexing rules
 └── firestore.rules         # Database security rules
 ```
 
@@ -76,7 +80,7 @@ ECA-Connect/
 1.  **Clone the repository**
     ```bash
     git clone https://github.com/yourusername/eca-connect.git
-    cd eca-connect
+    cd SocialSpaces
     ```
 
 2.  **Configure Firebase**
@@ -117,4 +121,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-Developed with ❤️ by the ECA-Connect Team.
+Developed with ❤️ by the SocialSpaces Team.
