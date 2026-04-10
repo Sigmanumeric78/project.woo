@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  # ── Production: nginx serving static files ─────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: socialspaces
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "com.socialspaces.service=web"
+
+  # ── Dev: live-reload via npx live-server ────────────────────────────────────
+  dev:
+    image: node:20-alpine
+    container_name: socialspaces-dev
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "4000:4000"
+    command: npx --yes live-server --port=4000 --host=0.0.0.0 --no-browser .
+    profiles:
+      - dev  # Only runs when: docker compose --profile dev up

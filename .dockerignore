@@ -1,9 +1,33 @@
+# Version Control
 .git
 .gitignore
+.gitattributes
+
+# IDE / Editor
 .vscode
+.idea
+*.swp
+*.swo
+
+# Firebase Dev Files
 .firebase
 .firebaserc
 firebase.json
+firestore.rules
+firestore.indexes.json
+
+# Dev Only Files
 README.md
 extract_district_state.py
+All_India_pincode_NO_GEOMETRY.json
+
+# Node
 node_modules
+npm-debug.log
+yarn-error.log
+
+# Docker itself — do not exclude; Docker needs these in the build context
+# docker-compose.yml
+# Dockerfile
+# .dockerignore
+# nginx.conf

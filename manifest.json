@@ -1,0 +1,85 @@
+{
+  "name": "SocialSpaces",
+  "short_name": "SocialSpaces",
+  "description": "Connect with real people via real-world availability. Find groups that match your schedule.",
+  "start_url": "/pages/login.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1C2038",
+  "theme_color": "#38B6FF",
+  "lang": "en",
+  "categories": ["social", "lifestyle", "sports"],
+  "icons": [
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dashboard - Discover Groups"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Discover Groups",
+      "url": "/pages/dashboard.html",
+      "description": "Find groups near you"
+    },
+    {
+      "name": "My Groups",
+      "url": "/pages/my-groups.html",
+      "description": "View your joined groups"
+    }
+  ],
+  "prefer_related_applications": false
+}

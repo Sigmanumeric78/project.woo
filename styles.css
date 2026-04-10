@@ -914,14 +914,379 @@ input:focus-visible+.slider {
     }
 }
 
-/* --- RESPONSIVE ADJUSTMENTS --- */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE & ANDROID OPTIMIZATIONS
+   Full responsive system — mobile-first, touch-optimized, PWA-ready
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Touch & Tap Target Improvements ─────────────────────────────────────── */
+* {
+    -webkit-tap-highlight-color: transparent;       /* Remove blue flash on Android tap */
+    -webkit-touch-callout: none;                    /* No callout on long press */
+}
+
+/* Interactive elements must be at least 44×44px (Android / accessibility) */
+button, .btn, a.btn,
+input[type="checkbox"], input[type="radio"],
+select, .avail-chip, .interest-tag, .tab-btn {
+    min-height: 44px;
+}
+
+/* Smooth scrolling on iOS/Android */
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;   /* Prevent font scaling in landscape */
+}
+
+body {
+    overscroll-behavior-y: contain;   /* Prevent pull-to-refresh on Android Chrome */
+}
+
+/* ── Bottom Navigation Bar (mobile only) ─────────────────────────────────── */
+#mobile-bottom-nav {
+    display: none;
+}
+
 @media (max-width: 768px) {
-    :root {
-        --text-h1: 2.25rem;
-        --text-h2: 1.75rem;
-        --text-h3: 1.25rem;
+    /* Show bottom nav */
+    #mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        background: var(--surface-50);
+        border-top: 1px solid var(--surface-200);
+        padding: 0;
+        height: 60px;
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+    }
+
+    #mobile-bottom-nav a {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-family: var(--font-body);
+        font-weight: 500;
+        padding: 8px 4px;
+        transition: color 0.2s;
+        border-top: 2px solid transparent;
+    }
+
+    #mobile-bottom-nav a.active,
+    #mobile-bottom-nav a:active {
+        color: var(--primary-500);
+        border-top-color: var(--primary-500);
+    }
+
+    #mobile-bottom-nav a span.nav-icon {
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    /* Push page content above bottom nav */
+    body {
+        padding-bottom: 60px;
     }
 }
+
+/* ── Mobile Typography ────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    :root {
+        --text-h1: 2.0rem;
+        --text-h2: 1.5rem;
+        --text-h3: 1.2rem;
+        --text-h4: 1.05rem;
+        --space-48: 2.0rem;
+        --space-32: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --text-h1: 1.75rem;
+        --text-h2: 1.35rem;
+        --text-h3: 1.1rem;
+        --space-48: 1.5rem;
+        --space-32: 1.25rem;
+    }
+}
+
+/* ── Navigation — Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    nav .user-menu {
+        gap: var(--space-8) !important;
+    }
+
+    /* Hide desktop nav links on mobile (replaced by bottom nav) */
+    nav > div > div:not(.user-menu) {
+        display: none !important;
+    }
+
+    /* Shrink dark mode toggle text on mobile */
+    #dark-mode-toggle {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+}
+
+/* ── Dashboard Layout — Mobile ───────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    /* Stack sidebar below results on tablet */
+    main > div[style*="grid-template-columns: 320px"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Full-bleed main padding */
+    main {
+        padding: var(--space-16) !important;
+    }
+
+    /* Dashboard filter sidebar: collapsible on mobile */
+    #filter-sidebar {
+        position: static !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    /* Group cards: single column */
+    #in-radius-groups,
+    #out-radius-groups,
+    .groups-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    /* Sort select: full width on mobile */
+    #sort-select {
+        width: 100% !important;
+    }
+}
+
+/* ── Cards — Mobile ──────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .card {
+        border-radius: var(--radius-md) !important;
+    }
+
+    /* Group detail hero */
+    #gd-hero-color,
+    [id="gd-hero-color"] {
+        height: 180px !important;
+    }
+}
+
+/* ── Forms — Mobile ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .input,
+    .textarea,
+    .select,
+    select {
+        font-size: 16px !important; /* Prevents iOS/Android zoom on focus */
+    }
+
+    /* Full-width buttons on small screens */
+    .btn-lg {
+        width: 100%;
+        min-height: 52px;
+    }
+
+    /* Auth pages: remove extra padding */
+    body[style*="height: 100vh"] > div {
+        margin: var(--space-16);
+        padding: var(--space-24) !important;
+    }
+}
+
+/* ── Hero Buttons ─────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    header div[style*="display: flex; gap"] {
+        flex-direction: column !important;
+        gap: var(--space-12) !important;
+    }
+}
+
+/* ── Group Manager — Mobile ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Stack group list and panel vertically */
+    main > div[style*="grid-template-columns: 300px"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    #groups-list {
+        position: static !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        gap: 8px !important;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    #groups-list::-webkit-scrollbar { display: none; }
+
+    #groups-list button {
+        flex-shrink: 0 !important;
+        width: 200px !important;
+    }
+}
+
+/* ── Notification Dropdown — Mobile ─────────────────────────────────────── */
+@media (max-width: 480px) {
+    #notif-dropdown {
+        width: calc(100vw - 32px) !important;
+        right: -16px !important;
+    }
+}
+
+/* ── Swipe-friendly Modals ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Time selection modal: bottom sheet on mobile */
+    #time-modal > div {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding-bottom: calc(var(--space-24) + env(safe-area-inset-bottom)) !important;
+        animation: slideUpSheet 0.3s ease;
+    }
+
+    @keyframes slideUpSheet {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+    }
+}
+
+/* ── Safe Area Insets (iPhone X / Android notch) ─────────────────────────── */
+@supports (padding: max(0px)) {
+    nav {
+        padding-left:  max(var(--space-16), env(safe-area-inset-left));
+        padding-right: max(var(--space-16), env(safe-area-inset-right));
+    }
+
+    #mobile-bottom-nav {
+        padding-bottom: env(safe-area-inset-bottom);
+        height: calc(60px + env(safe-area-inset-bottom));
+    }
+
+    body {
+        padding-bottom: calc(60px + env(safe-area-inset-bottom));
+    }
+}
+
+/* ── PWA Install Banner ──────────────────────────────────────────────────── */
+#pwa-install-banner {
+    display: none;
+    position: fixed;
+    bottom: 68px;  /* above bottom nav */
+    left: 16px;
+    right: 16px;
+    z-index: 300;
+    background: var(--surface-100);
+    border: 1px solid var(--primary-500);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-lg);
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    animation: slideUp 0.4s ease;
+}
+
+#pwa-install-banner.visible {
+    display: flex;
+}
+
+#pwa-install-banner img {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+}
+
+#pwa-install-banner .banner-text {
+    flex: 1;
+    min-width: 0;
+}
+
+#pwa-install-banner .banner-text strong {
+    display: block;
+    font-size: 13px;
+    color: var(--base-white);
+    margin-bottom: 2px;
+}
+
+#pwa-install-banner .banner-text span {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+#pwa-install-banner .banner-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* ── Scrollbar — Mobile Clean ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    ::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+}
+
+/* ── Input: number type — fix Android spinner ─────────────────────────────── */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+/* ── Profile Setup — Mobile scroll fix ───────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Ensure tall profile setup form is scrollable */
+    .profile-setup-container {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ── Availability Chips — mobile horizontal scroll ───────────────────────── */
+@media (max-width: 480px) {
+    .availability-chip-list {
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+    }
+    .availability-chip-list::-webkit-scrollbar { display: none; }
+}
+
+/* ── FAB (Floating Action Button) — mobile pos ───────────────────────────── */
+@media (max-width: 768px) {
+    /* Ensure FAB is above bottom nav */
+    a[style*="position: fixed; bottom: 32px; right: 32px"] {
+        bottom: 76px !important;
+    }
+}
+
 
 /* --- ACCESSIBILITY ENHANCEMENTS --- */
 

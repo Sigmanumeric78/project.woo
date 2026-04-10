@@ -3,16 +3,30 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>SocialSpaces | Connect via Real-World Availability</title>
+    <meta name="description" content="Find groups and activities that match your exact availability. Connect with real people in real time.">
+    <!-- PWA / Android -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#38B6FF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SocialSpaces">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" href="/icons/icon-192.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <!-- OG / Social -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SocialSpaces — Connect via Real-World Availability">
+    <meta property="og:description" content="Find groups that match your exact schedule. Hyper-local social matching.">
+    <meta property="og:image" content="/icons/icon-512.png">
     <!-- Prevent dark-mode flash -->
     <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -20,13 +34,14 @@
 <body>
     <!-- Navigation -->
     <nav style="background: var(--surface-50); padding: var(--space-16); border-bottom: 1px solid var(--surface-200);">
-        <div
-            style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-            <div
-                style="font-family: 'Anurati', sans-serif; font-weight: 400; font-size: var(--text-h3); color: var(--base-white);">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-family: 'Anurati', sans-serif; font-weight: 400; font-size: var(--text-h3); color: var(--base-white);">
                 SocialSpaces
             </div>
-            <button id="dark-mode-toggle">🌙 Dark Mode</button>
+            <div class="user-menu" style="display: flex; gap: var(--space-12); align-items: center;">
+                <a href="pages/login.html" class="btn btn-ghost btn-sm" style="min-height: 36px;">Log in</a>
+                <button id="dark-mode-toggle">🌙</button>
+            </div>
         </div>
     </nav>
 
@@ -46,23 +61,22 @@
 
     <!-- Features Preview -->
     <section id="features" style="padding: var(--space-48) 0; background: var(--surface-100);">
-        <div
-            style="max-width: 1200px; margin: 0 auto; padding: 0 var(--space-16); display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-32);">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 var(--space-16); display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-32);">
             <!-- Feature 1 -->
-            <div
-                style="background: var(--surface-100); padding: var(--space-24); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <div style="background: var(--surface-100); padding: var(--space-24); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+                <div style="font-size: 32px; margin-bottom: 12px;">🕒</div>
                 <h3>Availability First</h3>
                 <p>Set your free time (e.g., "Saturday 6-9pm") and instantly see who else is free.</p>
             </div>
             <!-- Feature 2 -->
-            <div
-                style="background: var(--surface-100); padding: var(--space-24); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <div style="background: var(--surface-100); padding: var(--space-24); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+                <div style="font-size: 32px; margin-bottom: 12px;">📍</div>
                 <h3>Nearby Discovery</h3>
                 <p>Find interest groups within your 5km radius. Badminton, coding, hiking, and more.</p>
             </div>
             <!-- Feature 3 -->
-            <div
-                style="background: var(--surface-100); padding: var(--space-24); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <div style="background: var(--surface-100); padding: var(--space-24); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+                <div style="font-size: 32px; margin-bottom: 12px;">👥</div>
                 <h3>Instant Groups</h3>
                 <p>Join open groups instantly or create your own. Automated ice-breakers to start the chat.</p>
             </div>
@@ -70,16 +84,64 @@
     </section>
 
     <!-- Footer -->
-    <footer
-        style="margin-top: var(--space-48); padding: var(--space-32); text-align: center; color: var(--text-muted);">
+    <footer style="margin-top: var(--space-48); padding: var(--space-32); text-align: center; color: var(--text-muted);">
         &copy; 2025 SocialSpaces. All rights reserved. &nbsp;·&nbsp;
         <a href="pages/privacy-policy.html" style="color: var(--primary-500); text-decoration: none;">Privacy Policy</a>
     </footer>
+
+    <!-- PWA Install Banner -->
+    <div id="pwa-install-banner">
+        <img src="/icons/icon-192.png" alt="SocialSpaces">
+        <div class="banner-text">
+            <strong>Install SocialSpaces</strong>
+            <span>Add to home screen for the best experience</span>
+        </div>
+        <div class="banner-actions">
+            <button id="pwa-install-btn" class="btn btn-primary btn-sm" style="min-height: 36px; font-size: 13px;">Install</button>
+            <button id="pwa-dismiss-btn" class="btn btn-ghost btn-sm" style="min-height: 36px; font-size: 13px;">✕</button>
+        </div>
+    </div>
 </body>
 
 <script type="module">
     import { initDarkModeToggle } from './js/dark-mode.js';
     initDarkModeToggle();
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(reg => console.log('✅ SW registered:', reg.scope))
+            .catch(err => console.warn('SW registration failed:', err));
+    }
+
+    // PWA Install Banner
+    let deferredPrompt = null;
+    const banner = document.getElementById('pwa-install-banner');
+    const installBtn = document.getElementById('pwa-install-btn');
+    const dismissBtn = document.getElementById('pwa-dismiss-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Show banner after 3s if user hasn't dismissed before
+        if (!localStorage.getItem('pwa-dismissed')) {
+            setTimeout(() => banner.classList.add('visible'), 3000);
+        }
+    });
+
+    installBtn?.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('PWA install outcome:', outcome);
+        deferredPrompt = null;
+        banner.classList.remove('visible');
+    });
+
+    dismissBtn?.addEventListener('click', () => {
+        banner.classList.remove('visible');
+        localStorage.setItem('pwa-dismissed', '1');
+    });
 </script>
 
 </html>
