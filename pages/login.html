@@ -18,169 +18,392 @@
     <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="../css/auth.css">
-    <script
-        src="https://www.google.com/recaptcha/enterprise.js?render=6LfBmngsAAAAANLwajriiJ6BcdzyV2GxeugmSnwr"></script>
-</head>
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfBmngsAAAAANLwajriiJ6BcdzyV2GxeugmSnwr" async defer></script>
 
-<body
-    style="height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--surface-50);">
-
-    <div
-        style="width: 100%; max-width: 400px; background: var(--surface-100); padding: var(--space-32); border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
-        <div style="text-align: center; margin-bottom: var(--space-16);">
-            <span
-                style="font-family: 'Anurati', sans-serif; font-size: 48px; color: var(--primary-500); letter-spacing: 2px;">SocialSpaces</span>
-        </div>
-        <h2 style="text-align: center; margin-bottom: var(--space-24);">Welcome Back</h2>
-
-        <!-- Error Message -->
-        <div id="error-message"
-            style="display: none; padding: 12px; background: #fee; border: 1px solid #fcc; border-radius: 8px; margin-bottom: 16px; color: #c33;">
-        </div>
-
-        <form id="login-form">
-            <div class="form-group">
-                <label class="label">Email</label>
-                <input id="email" type="email" class="input" placeholder="you@example.com" required>
-            </div>
-            <div class="form-group">
-                <label class="label" style="display: flex; justify-content: space-between; align-items: center;">
-                    Password
-                    <a href="forgot-password.html" style="font-size: var(--text-xs); color: var(--primary-600); font-weight: 500;">Forgot password?</a>
-                </label>
-                <input id="password" type="password" class="input" placeholder="••••••••" required>
-            </div>
-
-            <button id="login-btn" type="submit" class="btn btn-primary"
-                style="width: 100%; margin-top: var(--space-8);">
-                Log In
-            </button>
-
-            <div style="text-align: center; margin: 16px 0; color: var(--text-muted);">or</div>
-
-            <button id="google-btn" type="button" class="btn btn-google"
-                style="margin-top: var(--space-8); justify-content: center;">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
-                    style="width: 20px; height: 20px; margin-right: 8px;">
-                Continue with Google
-            </button>
-        </form>
-
-        <p class="text-muted" style="text-align: center; margin-top: var(--space-24); font-size: var(--text-sm);">
-            Don't have an account? <a href="signup.html" style="color: var(--primary-600);">Sign up</a>
-        </p>
-    </div>
-
-    <!-- Firebase Authentication Integration -->
-    <script type="module">
-        import { authService } from '../js/auth-service.js';
-        import { redirectIfAuthenticated } from '../js/route-guard.js';
-
-        const form = document.getElementById('login-form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginBtn = document.getElementById('login-btn');
-        const googleBtn = document.getElementById('google-btn');
-        const errorMessage = document.getElementById('error-message');
-
-        // Show error message
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            setTimeout(() => {
-                errorMessage.style.display = 'none';
-            }, 5000);
+    <style>
+        /* ── Page Reset: allow scrolling when keyboard is open ─── */
+        html, body {
+            height: 100%;
+            min-height: 100%;
+            overflow-y: auto;
+            margin: 0;
+            padding: 0;
         }
 
-        // Set loading state
-        function setLoading(isLoading, button) {
-            if (isLoading) {
-                button.disabled = true;
-                button.dataset.originalText = button.textContent;
-                button.textContent = 'Loading...';
-            } else {
-                button.disabled = false;
-                button.textContent = button.dataset.originalText;
+        body {
+            background: var(--surface-50);
+            display: flex;
+            flex-direction: column;
+            min-height: 100dvh; /* dvh = dynamic viewport height — respects keyboard */
+        }
+
+        /* ── Theme toggle: top-right ──────────────────────────── */
+        #dark-mode-toggle {
+            position: fixed;
+            top: calc(12px + env(safe-area-inset-top));
+            right: 16px;
+            z-index: 999;
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        /* ── Page wrapper: centers on desktop, stacks on mobile ─ */
+        .login-page {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 16px 32px;   /* top pad clears fixed toggle */
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 480px) {
+            .login-page {
+                justify-content: flex-start;  /* stick to top on small phones */
+                padding-top: 60px;
             }
         }
 
-        // Email/Password Login
+        /* ── Login Card ───────────────────────────────────────── */
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--surface-100);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        /* ── Card Header (gradient banner) ───────────────────── */
+        .login-header {
+            background: linear-gradient(135deg, #0d1b3e 0%, #1a2f5e 50%, #0096D6 100%);
+            padding: 32px 28px 28px;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0; right: 0;
+            height: 24px;
+            background: var(--surface-100);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .login-logo {
+            font-family: 'Anurati', sans-serif;
+            font-size: 36px;
+            color: #38B6FF;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 360px) {
+            .login-logo { font-size: 28px; }
+        }
+
+        .login-header p {
+            color: rgba(255,255,255,0.65);
+            font-size: 13px;
+            margin: 0;
+            font-family: var(--font-body);
+        }
+
+        /* ── Card Body ────────────────────────────────────────── */
+        .login-body {
+            padding: 28px 28px 24px;
+        }
+
+        @media (max-width: 380px) {
+            .login-body {
+                padding: 24px 20px 20px;
+            }
+        }
+
+        /* ── Error Banner ─────────────────────────────────────── */
+        #error-message {
+            display: none;
+            padding: 12px 14px;
+            background: var(--error-bg, #300);
+            border: 1px solid var(--error-text, #f44);
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+            color: var(--error-text, #f87171);
+            font-size: 13px;
+            line-height: 1.5;
+            border-left: 4px solid #ef4444;
+        }
+
+        /* ── Form inputs: prevent zoom on Android ─────────────── */
+        .input {
+            font-size: 16px !important; /* Stops Android keyboard zoom */
+            min-height: 48px;
+        }
+
+        /* ── Password toggle ──────────────────────────────────── */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .input {
+            padding-right: 48px;
+        }
+
+        #toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 18px;
+            min-height: unset;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        /* ── Submit button ────────────────────────────────────── */
+        #login-btn {
+            width: 100%;
+            min-height: 52px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* ── Divider ──────────────────────────────────────────── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--surface-300);
+        }
+
+        .divider span {
+            color: var(--text-muted);
+            font-size: 12px;
+            font-family: var(--font-body);
+            white-space: nowrap;
+        }
+
+        /* ── Google button ────────────────────────────────────── */
+        #google-btn {
+            width: 100%;
+            min-height: 52px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #google-btn img {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        /* ── Footer links ─────────────────────────────────────── */
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-family: var(--font-body);
+        }
+
+        .login-footer a {
+            color: var(--primary-500);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* ── Safe area bottom padding ─────────────────────────── */
+        .login-page {
+            padding-bottom: max(32px, env(safe-area-inset-bottom));
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Dark Mode Toggle -->
+    <button id="dark-mode-toggle">🌙</button>
+
+    <div class="login-page">
+        <div class="login-card">
+
+            <!-- Gradient Header -->
+            <div class="login-header">
+                <span class="login-logo">SocialSpaces</span>
+                <p>Connect with real people, nearby</p>
+            </div>
+
+            <!-- Form Body -->
+            <div class="login-body">
+
+                <h2 style="margin: 0 0 20px; font-size: 22px; text-align: center;">Welcome Back</h2>
+
+                <!-- Error Message -->
+                <div id="error-message"></div>
+
+                <form id="login-form" novalidate>
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label class="label" for="email">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            class="input"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            inputmode="email"
+                            required>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="label" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Password</span>
+                            <a href="forgot-password.html" style="font-size: 12px; color: var(--primary-500); font-weight: 500;">Forgot password?</a>
+                        </label>
+                        <div class="password-wrapper">
+                            <input
+                                id="password"
+                                type="password"
+                                class="input"
+                                placeholder="••••••••"
+                                autocomplete="current-password"
+                                required>
+                            <button type="button" id="toggle-password" aria-label="Show password">👁️</button>
+                        </div>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button id="login-btn" type="submit" class="btn btn-primary">
+                        Log In
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="divider"><span>or continue with</span></div>
+
+                <!-- Google -->
+                <button id="google-btn" type="button" class="btn btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Continue with Google
+                </button>
+
+                <!-- Sign Up Link -->
+                <p class="login-footer" style="margin-top: 24px;">
+                    Don't have an account? <a href="signup.html">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Script -->
+    <script type="module">
+        import { authService } from '../js/auth-service.js';
+        import { redirectIfAuthenticated } from '../js/route-guard.js';
+        import { initDarkModeToggle } from '../js/dark-mode.js';
+
+        initDarkModeToggle();
+        redirectIfAuthenticated();
+
+        const form        = document.getElementById('login-form');
+        const emailInput  = document.getElementById('email');
+        const passInput   = document.getElementById('password');
+        const loginBtn    = document.getElementById('login-btn');
+        const googleBtn   = document.getElementById('google-btn');
+        const errorDiv    = document.getElementById('error-message');
+        const togglePass  = document.getElementById('toggle-password');
+
+        // Show/hide password
+        togglePass.addEventListener('click', () => {
+            const isText = passInput.type === 'text';
+            passInput.type = isText ? 'password' : 'text';
+            togglePass.textContent = isText ? '👁️' : '🙈';
+        });
+
+        function showError(msg) {
+            errorDiv.textContent = msg;
+            errorDiv.style.display = 'block';
+            // Scroll so error is visible on small phones
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 6000);
+        }
+
+        function setLoading(btn, loading) {
+            btn.disabled = loading;
+            if (loading) {
+                btn.dataset.orig = btn.innerHTML;
+                btn.innerHTML = '<span style="opacity:0.7">Loading…</span>';
+            } else {
+                btn.innerHTML = btn.dataset.orig || btn.innerHTML;
+            }
+        }
+
+        // Email/Password login
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            errorMessage.style.display = 'none';
+            errorDiv.style.display = 'none';
+            const email    = emailInput.value.trim();
+            const password = passInput.value;
+            if (!email || !password) return;
 
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-
-            setLoading(true, loginBtn);
+            setLoading(loginBtn, true);
 
             grecaptcha.enterprise.ready(async () => {
                 await grecaptcha.enterprise.execute('6LfBmngsAAAAANLwajriiJ6BcdzyV2GxeugmSnwr', { action: 'LOGIN' });
-
                 const result = await authService.loginWithEmail(email, password);
 
                 if (result.success) {
                     const profile = await authService.loadUserProfile(result.user.uid);
-
-                    // Redirect based on profile completion
-                    if (profile && profile.profileComplete) {
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        window.location.href = 'profile-setup.html';
-                    }
+                    window.location.href = (profile && profile.profileComplete)
+                        ? 'dashboard.html'
+                        : 'profile-setup.html';
                 } else {
-                    setLoading(false, loginBtn);
+                    setLoading(loginBtn, false);
                     showError(result.error);
                 }
             });
         });
 
-        // Google OAuth Login
-        googleBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            errorMessage.style.display = 'none';
-
-            setLoading(true, googleBtn);
+        // Google login
+        googleBtn.addEventListener('click', async () => {
+            errorDiv.style.display = 'none';
+            setLoading(googleBtn, true);
 
             grecaptcha.enterprise.ready(async () => {
                 await grecaptcha.enterprise.execute('6LfBmngsAAAAANLwajriiJ6BcdzyV2GxeugmSnwr', { action: 'LOGIN' });
-
                 const result = await authService.loginWithGoogle();
 
                 if (result.success) {
                     const profile = await authService.loadUserProfile(result.user.uid);
-
-                    // Redirect based on profile completion
-                    if (profile && profile.profileComplete) {
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        window.location.href = 'profile-setup.html';
-                    }
+                    window.location.href = (profile && profile.profileComplete)
+                        ? 'dashboard.html'
+                        : 'profile-setup.html';
                 } else {
-                    setLoading(false, googleBtn);
-                    if (result.error !== 'Login cancelled') {
-                        showError(result.error);
-                    }
+                    setLoading(googleBtn, false);
+                    if (result.error !== 'Login cancelled') showError(result.error);
                 }
             });
         });
-
-        // Check if already authenticated
-        redirectIfAuthenticated();
     </script>
-
 </body>
-
-<script type="module">
-    import { initDarkModeToggle } from '../js/dark-mode.js';
-    // Inject toggle button above the login card
-    const btn = document.createElement('button');
-    btn.id = 'dark-mode-toggle';
-    btn.textContent = '🌙 Dark Mode';
-    btn.style.cssText = 'position:fixed;top:16px;right:16px;z-index:999;';
-    document.body.appendChild(btn);
-    initDarkModeToggle();
-</script>
 
 </html>
