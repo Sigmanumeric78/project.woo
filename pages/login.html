@@ -21,13 +21,20 @@
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfBmngsAAAAANLwajriiJ6BcdzyV2GxeugmSnwr" async defer></script>
 
     <style>
-        /* ── Page Reset: allow scrolling when keyboard is open ─── */
+        /* ── Page Reset: allow scrolling, prevent horizontal overflow ─── */
+        * {
+            box-sizing: border-box;
+        }
+        
         html, body {
             height: 100%;
             min-height: 100%;
-            overflow-y: auto;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden !important; /* Force no horizontal scroll */
             margin: 0;
             padding: 0;
+            -webkit-text-size-adjust: 100%;
         }
 
         body {
@@ -45,6 +52,11 @@
             z-index: 999;
             padding: 8px 12px;
             font-size: 13px;
+            border: 1px solid var(--surface-300);
+            background: var(--surface-100);
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            cursor: pointer;
         }
 
         /* ── Page wrapper: centers on desktop, stacks on mobile ─ */
@@ -55,7 +67,8 @@
             align-items: center;
             justify-content: center;
             padding: 80px 16px 32px;   /* top pad clears fixed toggle */
-            box-sizing: border-box;
+            width: 100%;
+            max-width: 100vw;
         }
 
         @media (max-width: 480px) {
@@ -73,12 +86,13 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             overflow: hidden;
+            border: 1px solid var(--surface-200);
         }
 
         /* ── Card Header (gradient banner) ───────────────────── */
         .login-header {
             background: linear-gradient(135deg, #0d1b3e 0%, #1a2f5e 50%, #0096D6 100%);
-            padding: 32px 28px 28px;
+            padding: 28px 24px 24px;
             text-align: center;
             position: relative;
         }
@@ -95,15 +109,14 @@
 
         .login-logo {
             font-family: 'Anurati', sans-serif;
-            font-size: 36px;
+            font-size: clamp(24px, 8vw, 36px);
             color: #38B6FF;
             letter-spacing: 2px;
             display: block;
             margin-bottom: 6px;
-        }
-
-        @media (max-width: 360px) {
-            .login-logo { font-size: 28px; }
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .login-header p {
@@ -115,12 +128,12 @@
 
         /* ── Card Body ────────────────────────────────────────── */
         .login-body {
-            padding: 28px 28px 24px;
+            padding: 20px 28px 24px;
         }
 
         @media (max-width: 380px) {
             .login-body {
-                padding: 24px 20px 20px;
+                padding: 16px 20px 20px;
             }
         }
 
@@ -140,13 +153,16 @@
 
         /* ── Form inputs: prevent zoom on Android ─────────────── */
         .input {
+            width: 100%;
             font-size: 16px !important; /* Stops Android keyboard zoom */
             min-height: 48px;
+            border-radius: var(--radius-md);
         }
 
         /* ── Password toggle ──────────────────────────────────── */
         .password-wrapper {
             position: relative;
+            width: 100%;
         }
 
         .password-wrapper .input {
@@ -183,6 +199,7 @@
             align-items: center;
             gap: 12px;
             margin: 20px 0;
+            width: 100%;
         }
 
         .divider::before,
@@ -235,6 +252,12 @@
         /* ── Safe area bottom padding ─────────────────────────── */
         .login-page {
             padding-bottom: max(32px, env(safe-area-inset-bottom));
+        }
+
+        /* Hide recaptcha badge completely since it interferes on mobile */
+        .grecaptcha-badge {
+            visibility: hidden !important;
+            opacity: 0 !important;
         }
     </style>
 </head>
