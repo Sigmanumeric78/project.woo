@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Groups | SocialSpaces</title>
+    <meta name="description" content="View all the groups you've joined and track your pending join requests.">
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+    <!-- Top Nav -->
+    <nav style="background: var(--surface-50); padding: var(--space-16); border-bottom: 1px solid var(--surface-200); position: sticky; top: 0; z-index: 100;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; gap: var(--space-16); align-items: center;">
+            <a href="dashboard.html" style="font-family: 'Anurati', sans-serif; font-weight: 400; color: var(--base-white); text-decoration: none; white-space: nowrap;">SocialSpaces</a>
+
+            <div style="display: flex; gap: var(--space-12); align-items: center; margin-left: 8px;">
+                <a href="dashboard.html" style="font-size: 14px; color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: var(--radius-full); transition: all 0.2s;" onmouseover="this.style.background='var(--surface-200)'" onmouseout="this.style.background='transparent'">🔍 Discover</a>
+                <a href="my-groups.html" style="font-size: 14px; color: var(--primary-500); text-decoration: none; padding: 6px 12px; border-radius: var(--radius-full); background: var(--primary-50); font-weight: 600;">👥 My Groups</a>
+                <a href="group-manager.html" style="font-size: 14px; color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: var(--radius-full); transition: all 0.2s;" onmouseover="this.style.background='var(--surface-200)'" onmouseout="this.style.background='transparent'">👑 Manage</a>
+            </div>
+
+            <div class="user-menu" style="display: flex; align-items: center; gap: var(--space-16); margin-left: auto;">
+                <button id="dark-mode-toggle">🌙 Dark Mode</button>
+                <a href="profile.html" style="text-decoration: none;">
+                    <div class="avatar avatar-s" id="nav-avatar">?</div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="max-width: 900px; margin: 0 auto; padding: var(--space-32) var(--space-24);">
+
+        <!-- Page Header -->
+        <div style="margin-bottom: var(--space-32);">
+            <h2 style="margin-bottom: var(--space-8);">My Groups</h2>
+            <p class="text-muted">Groups you're a member of and requests you've sent</p>
+        </div>
+
+        <!-- Joined Groups Section -->
+        <section style="margin-bottom: var(--space-48);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-20);">
+                <h3 style="margin: 0; font-size: 18px;">Joined Groups</h3>
+                <a href="dashboard.html" class="btn btn-secondary btn-sm">+ Find More</a>
+            </div>
+            <div id="joined-groups-list" style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="text-align:center;padding:32px;color:var(--text-muted);">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Divider -->
+        <div style="height: 1px; background: var(--surface-200); margin-bottom: var(--space-48);"></div>
+
+        <!-- My Requests Section -->
+        <section>
+            <div style="margin-bottom: var(--space-20);">
+                <h3 style="margin-bottom: var(--space-8); font-size: 18px;">Join Requests Sent</h3>
+                <p class="text-muted" style="font-size: 14px;">Track the status of groups you've applied to join</p>
+            </div>
+            <div id="my-requests-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="text-align:center;padding:32px;color:var(--text-muted);">Loading...</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" src="../js/my-groups.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | SocialSpaces</title>
+    <meta name="description" content="SocialSpaces Privacy Policy — how we collect, use, and protect your data.">
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .policy-section { margin-bottom: 36px; }
+        .policy-section h3 { margin-bottom: 12px; font-size: 18px; color: var(--primary-500); }
+        .policy-section p, .policy-section li { font-size: 15px; color: var(--text-description); line-height: 1.8; margin-bottom: 8px; }
+        .policy-section ul { padding-left: 20px; }
+    </style>
+</head>
+
+<body>
+    <!-- Nav -->
+    <nav style="background: var(--surface-50); padding: var(--space-16); border-bottom: 1px solid var(--surface-200);">
+        <div style="max-width: 900px; margin: 0 auto; display: flex; align-items: center; gap: 16px;">
+            <a href="../index.html" style="font-family: 'Anurati', sans-serif; font-weight: 400; color: var(--base-white); text-decoration: none;">SocialSpaces</a>
+            <div style="margin-left: auto; display: flex; gap: 12px; align-items: center;">
+                <a href="../index.html" class="btn btn-ghost btn-sm">Home</a>
+                <button id="dark-mode-toggle">🌙 Dark Mode</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main style="max-width: 900px; margin: 0 auto; padding: 48px 24px;">
+
+        <div style="margin-bottom: 48px;">
+            <h1 style="margin-bottom: 12px;">Privacy Policy</h1>
+            <p class="text-muted" style="font-size: 14px;">Last updated: April 2025 &nbsp;·&nbsp; Apache 2.0 Licensed Project</p>
+        </div>
+
+        <div class="policy-section">
+            <h3>1. Overview</h3>
+            <p>SocialSpaces ("the Platform", "we", "us") is an open-source, hyper-local social matching platform. We are committed to protecting your personal information and being transparent about how it is used. This policy applies to all users of the Platform.</p>
+        </div>
+
+        <div class="policy-section">
+            <h3>2. Information We Collect</h3>
+            <ul>
+                <li><strong>Account Information:</strong> Email address, display name, and profile photo (via Google OAuth or manual sign-up).</li>
+                <li><strong>Profile Data:</strong> Bio, interests, skill level, age, and availability windows you provide during profile setup.</li>
+                <li><strong>Location Data:</strong> City, district, and state (manually entered). Precise GPS coordinates are never collected automatically.</li>
+                <li><strong>Activity Data:</strong> Groups you create or join, join requests you send or process, and messages in group chats.</li>
+                <li><strong>Technical Data:</strong> Browser type, device type, and error logs for debugging purposes.</li>
+            </ul>
+        </div>
+
+        <div class="policy-section">
+            <h3>3. How We Use Your Information</h3>
+            <ul>
+                <li>To match you with compatible groups using our compatibility scoring algorithm.</li>
+                <li>To display your public profile to other users within the Platform.</li>
+                <li>To process join requests and send in-app notifications.</li>
+                <li>To send transactional emails (join request updates) via EmailJS where configured.</li>
+                <li>To improve the Platform through aggregated, anonymised analytics.</li>
+            </ul>
+        </div>
+
+        <div class="policy-section">
+            <h3>4. Data Sharing & Third Parties</h3>
+            <ul>
+                <li><strong>Firebase (Google):</strong> We use Firebase Authentication and Firestore as our backend. Data is subject to <a href="https://firebase.google.com/support/privacy" target="_blank" style="color: var(--primary-500);">Google's Privacy Policy</a>.</li>
+                <li><strong>Nominatim / OSRM:</strong> Location queries for distance calculations may be sent to these open-source routing services. No personal data is transmitted — only coordinates.</li>
+                <li><strong>EmailJS:</strong> If configured, join request emails are sent via EmailJS. Only necessary template variables are transmitted.</li>
+                <li>We do <strong>not</strong> sell your data to any third party.</li>
+            </ul>
+        </div>
+
+        <div class="policy-section">
+            <h3>5. Privacy-by-Design Principles</h3>
+            <ul>
+                <li><strong>Double-blind coordination:</strong> Group locations are approximate; precise addresses are never shared publicly.</li>
+                <li><strong>Ephemeral coordinates:</strong> Raw GPS data (if ever collected) is never persisted beyond the current session.</li>
+                <li><strong>Join request access control:</strong> Your email in a join request is only visible to you and the group creator — not to other users.</li>
+                <li><strong>Firestore rules:</strong> Database security rules enforce that users can only read and write their own data.</li>
+            </ul>
+        </div>
+
+        <div class="policy-section">
+            <h3>6. Your Rights & Controls</h3>
+            <ul>
+                <li><strong>Access & Export:</strong> You may access your profile data at any time via the Profile page.</li>
+                <li><strong>Correction:</strong> Update your profile information in the Edit Profile page.</li>
+                <li><strong>Deletion:</strong> Contact us to request account deletion. All associated data will be permanently removed.</li>
+                <li><strong>Opt-out:</strong> You may disable email notifications by not configuring EmailJS credentials.</li>
+            </ul>
+        </div>
+
+        <div class="policy-section">
+            <h3>7. Data Retention</h3>
+            <p>In-app notifications are automatically deleted after 30 days. Resolved join requests (approved or rejected) are pruned after 7 days. Account data is retained until you request deletion.</p>
+        </div>
+
+        <div class="policy-section">
+            <h3>8. Security</h3>
+            <p>We use Firebase's built-in security features, including server-side Firestore security rules, to protect your data. All communications are encrypted via HTTPS. No security system is perfect; please use a strong, unique password.</p>
+        </div>
+
+        <div class="policy-section">
+            <h3>9. Children's Privacy</h3>
+            <p>SocialSpaces is not directed at children under the age of 13. We do not knowingly collect personal information from children. If you believe a child has provided us with their data, please contact us immediately.</p>
+        </div>
+
+        <div class="policy-section">
+            <h3>10. Changes to This Policy</h3>
+            <p>We may update this policy periodically. Changes will be posted on this page with an updated date. Continued use of the Platform after changes constitutes acceptance.</p>
+        </div>
+
+        <div class="policy-section">
+            <h3>11. Contact</h3>
+            <p>For privacy-related questions or data deletion requests, open an issue on our <a href="https://github.com/hashh001/letsconnect" target="_blank" style="color: var(--primary-500);">GitHub repository</a>.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="padding: 32px 24px; text-align: center; border-top: 1px solid var(--surface-200); color: var(--text-muted); font-size: 13px; margin-top: 48px;">
+        <p style="margin: 0;">&copy; 2025 SocialSpaces · <a href="privacy-policy.html" style="color: var(--primary-500);">Privacy Policy</a> · Open Source (Apache 2.0)</p>
+    </footer>
+
+    <script type="module">
+        import { initDarkModeToggle } from '../js/dark-mode.js';
+        initDarkModeToggle();
+    </script>
+</body>
+
+</html>

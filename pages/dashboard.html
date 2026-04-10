@@ -154,7 +154,14 @@
                 style="font-family: 'Anurati', sans-serif; font-weight: 400; color: var(--base-white); white-space: nowrap;">
                 SocialSpaces</div>
 
+            <div style="display: flex; gap: var(--space-12); align-items: center; margin-left: 8px;">
+                <a href="dashboard.html" style="font-size: 14px; color: var(--primary-500); text-decoration: none; padding: 6px 12px; border-radius: var(--radius-full); background: var(--primary-50); font-weight: 600;">🔍 Discover</a>
+                <a href="my-groups.html" style="font-size: 14px; color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: var(--radius-full); transition: all 0.2s;" onmouseover="this.style.background='var(--surface-200)'" onmouseout="this.style.background='transparent'">👥 My Groups</a>
+                <a href="group-manager.html" style="font-size: 14px; color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: var(--radius-full); transition: all 0.2s;" onmouseover="this.style.background='var(--surface-200)'" onmouseout="this.style.background='transparent'">👑 Manage</a>
+            </div>
+
             <div class="user-menu" style="display: flex; align-items: center; gap: var(--space-16); margin-left: auto;">
+                <!-- Notification bell injected by notification-dropdown.js after auth -->
                 <button id="dark-mode-toggle">🌙 Dark Mode</button>
                 <a href="profile.html" style="text-decoration: none;">
                     <div class="avatar avatar-s" id="nav-avatar">...</div>
@@ -445,7 +452,20 @@
 
 <script type="module">
     import { initDarkModeToggle } from '../js/dark-mode.js';
+    import { initNotificationDropdown } from '../js/notification-dropdown.js';
+    import { auth } from '../js/firebase-config.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
     initDarkModeToggle();
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            initNotificationDropdown(user.uid);
+            const navAvatar = document.getElementById('nav-avatar');
+            if (navAvatar) {
+                navAvatar.textContent = (user.displayName || user.email || '?')[0].toUpperCase();
+                if (user.photoURL) navAvatar.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" alt="avatar">`;
+            }
+        }
+    });
 </script>
 
 </html>

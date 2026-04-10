@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | SocialSpaces</title>
+    <meta name="description" content="View a user's public profile on SocialSpaces.">
+    <!-- Prevent dark-mode flash -->
+    <script>try { var t = localStorage.getItem('eca-theme'); if (t === 'dark') { document.documentElement.classList.add('dark') } else { document.documentElement.classList.add('light') } } catch (e) { }</script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+    <!-- Top Nav -->
+    <nav style="background: var(--surface-50); padding: var(--space-16); border-bottom: 1px solid var(--surface-200);">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: var(--space-16);">
+            <a href="dashboard.html" style="font-family: 'Anurati', sans-serif; font-weight: 400; color: var(--base-white); text-decoration: none;">SocialSpaces</a>
+            <div style="margin-left: auto; display: flex; gap: var(--space-12); align-items: center;">
+                <button onclick="history.back()" class="btn btn-secondary btn-sm">← Back</button>
+                <button id="dark-mode-toggle">🌙 Dark Mode</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Content -->
+    <main style="max-width: 800px; margin: 0 auto; padding: var(--space-32) var(--space-24);">
+
+        <!-- Loading State -->
+        <div id="profile-loading" style="text-align: center; padding: 64px 24px; color: var(--text-muted);">
+            <div style="font-size: 40px; margin-bottom: 16px;">⏳</div>
+            <p>Loading profile...</p>
+        </div>
+
+        <!-- Not Found State -->
+        <div id="profile-not-found" style="display: none; text-align: center; padding: 64px 24px;">
+            <div style="font-size: 64px; margin-bottom: 20px;">🙈</div>
+            <h2 style="margin-bottom: 12px;">Profile not found</h2>
+            <p class="text-muted" style="margin-bottom: 24px;">This profile doesn't exist or isn't publicly visible.</p>
+            <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+        </div>
+
+        <!-- Profile Card -->
+        <div id="profile-content" style="display: none;">
+
+            <!-- Header -->
+            <div class="card" style="margin-bottom: var(--space-24); overflow: hidden;">
+                <!-- Banner -->
+                <div id="profile-banner" style="height: 120px; background: linear-gradient(135deg, var(--primary-500), var(--primary-700));"></div>
+
+                <div style="padding: var(--space-24); padding-top: 0;">
+                    <!-- Avatar overlapping banner -->
+                    <div style="display: flex; align-items: flex-end; gap: var(--space-16); margin-top: -40px; margin-bottom: var(--space-16);">
+                        <div id="profile-avatar" class="avatar avatar-l" style="border: 3px solid var(--surface-100); background: var(--surface-200); font-size: 28px; width: 80px; height: 80px;">?</div>
+                    </div>
+
+                    <h2 id="profile-name" style="margin-bottom: var(--space-4);">Loading...</h2>
+                    <p id="profile-bio" class="text-muted" style="font-size: 15px; margin-bottom: var(--space-16); line-height: 1.6;"></p>
+
+                    <!-- Quick Stats Row -->
+                    <div style="display: flex; gap: var(--space-24); flex-wrap: wrap;">
+                        <div id="profile-location" style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-muted);">
+                            <span>📍</span><span></span>
+                        </div>
+                        <div id="profile-age" style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-muted);">
+                            <span>🎂</span><span></span>
+                        </div>
+                        <div id="profile-skill" style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-muted);">
+                            <span>⚡</span><span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interests -->
+            <div class="card" style="margin-bottom: var(--space-24); padding: var(--space-24);">
+                <h4 style="margin-bottom: var(--space-16);">Interests</h4>
+                <div id="profile-interests" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+            </div>
+
+            <!-- Availability -->
+            <div class="card" style="padding: var(--space-24);">
+                <h4 style="margin-bottom: var(--space-16);">Availability</h4>
+                <div id="profile-availability" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { firestoreService } from '../js/firestore-service.js';
+        import { initDarkModeToggle } from '../js/dark-mode.js';
+
+        initDarkModeToggle();
+
+        const params = new URLSearchParams(window.location.search);
+        const uid = params.get('uid');
+
+        async function loadProfile() {
+            if (!uid) {
+                showNotFound();
+                return;
+            }
+
+            try {
+                const profile = await firestoreService.getDocument('users', uid);
+
+                if (!profile || profile.profileComplete === false) {
+                    showNotFound();
+                    return;
+                }
+
+                renderProfile(profile);
+            } catch (err) {
+                console.error('Failed to load profile:', err);
+                showNotFound();
+            }
+        }
+
+        function showNotFound() {
+            document.getElementById('profile-loading').style.display = 'none';
+            document.getElementById('profile-not-found').style.display = 'block';
+        }
+
+        function renderProfile(p) {
+            document.getElementById('profile-loading').style.display = 'none';
+            document.getElementById('profile-content').style.display = 'block';
+            document.title = `${p.name || 'User'} | SocialSpaces`;
+
+            // Avatar
+            const avatarEl = document.getElementById('profile-avatar');
+            if (p.photoURL) {
+                avatarEl.innerHTML = `<img src="${p.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" alt="${p.name}">`;
+            } else {
+                avatarEl.textContent = (p.name || '?')[0].toUpperCase();
+            }
+
+            // Banner colour
+            if (p.bannerColor) {
+                document.getElementById('profile-banner').style.background = p.bannerColor;
+            }
+
+            // Text
+            document.getElementById('profile-name').textContent = p.name || 'Unknown User';
+            document.getElementById('profile-bio').textContent = p.bio || '';
+
+            if (p.city || p.district) {
+                document.getElementById('profile-location').querySelector('span:last-child').textContent = [p.city, p.district, p.state].filter(Boolean).join(', ');
+            } else {
+                document.getElementById('profile-location').style.display = 'none';
+            }
+
+            if (p.age) {
+                document.getElementById('profile-age').querySelector('span:last-child').textContent = `${p.age} years old`;
+            } else {
+                document.getElementById('profile-age').style.display = 'none';
+            }
+
+            if (p.skillLevel) {
+                const levels = { beginner: '🌱 Beginner', intermediate: '⚡ Intermediate', advanced: '🔥 Advanced' };
+                document.getElementById('profile-skill').querySelector('span:last-child').textContent = levels[p.skillLevel] || p.skillLevel;
+            } else {
+                document.getElementById('profile-skill').style.display = 'none';
+            }
+
+            // Interests
+            const interestsEl = document.getElementById('profile-interests');
+            if (p.interests && p.interests.length > 0) {
+                interestsEl.innerHTML = p.interests.map(i =>
+                    `<span class="tag">${i}</span>`
+                ).join('');
+            } else {
+                interestsEl.innerHTML = '<p class="text-muted" style="font-size:14px;">No interests listed.</p>';
+            }
+
+            // Availability
+            const availEl = document.getElementById('profile-availability');
+            if (p.availability && p.availability.length > 0) {
+                availEl.innerHTML = p.availability.map(a => `
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface-200);border-radius:var(--radius-md);">
+                        <span style="font-weight:600;font-size:14px;min-width:80px;">${a.day}</span>
+                        <span style="color:var(--text-muted);font-size:13px;">${a.start} – ${a.end}</span>
+                    </div>
+                `).join('');
+            } else {
+                availEl.innerHTML = '<p class="text-muted" style="font-size:14px;">No availability listed.</p>';
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+
+</html>
