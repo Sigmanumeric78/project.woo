@@ -16,16 +16,14 @@
         src="https://www.google.com/recaptcha/enterprise.js?render=6LfBmngsAAAAANLwajriiJ6BcdzyV2GxeugmSnwr"></script>
 </head>
 
-<body
-    style="height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--surface-50);">
+<body style="min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
 
-    <div
-        style="width: 100%; max-width: 400px; background: var(--surface-100); padding: var(--space-32); border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
-        <div style="text-align: center; margin-bottom: var(--space-16);">
+    <div class="login-card" style="width: 100%; max-width: 400px; padding: 32px; border: 1px solid var(--surface-200);">
+        <div style="text-align: center; margin-bottom: 24px;">
             <span
-                style="font-family: 'Anurati', sans-serif; font-size: 48px; color: var(--primary-500); letter-spacing: 2px;">SocialSpaces</span>
+                style="font-family: 'Anurati', sans-serif; font-size: clamp(24px, 8vw, 36px); color: var(--base-white); letter-spacing: 2px; text-shadow: 0 4px 12px rgba(255,255,255,0.1);">SocialSpaces</span>
         </div>
-        <h2 style="text-align: center; margin-bottom: var(--space-24);">Create Account</h2>
+        <h2 style="text-align: center; margin-bottom: 24px;">Create Account</h2>
 
         <!-- Error Message -->
         <div id="error-message"
