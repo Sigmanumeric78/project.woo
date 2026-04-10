@@ -1,0 +1,9 @@
+.git
+.gitignore
+.vscode
+.firebase
+.firebaserc
+firebase.json
+README.md
+extract_district_state.py
+node_modules
