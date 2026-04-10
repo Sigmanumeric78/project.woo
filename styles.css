@@ -9,79 +9,79 @@
    LIGHT MODE (DEFAULT)
    Palette: White backgrounds | Dark Navy text | Sky Blue actions
    ============================================================ */
-:root {
-    /* --- BACKGROUNDS --- */
-    --base-black: #FFFFFF;
+:root, html.dark {
+    /* --- BACKGROUNDS - ssscript.app Minimalist Dark Style --- */
+    --base-black: #000000;
     /* Page background  */
-    --surface-50: #F0F4FA;
-    /* Section backgrounds */
-    --surface-100: #E4EBF5;
+    --surface-50: #0a0a0a;
+    /* Section backgrounds (translucent for glass effect) */
+    --surface-100: rgba(25, 25, 25, 0.6);
     /* Card backgrounds */
-    --surface-200: #C8D6EA;
+    --surface-200: rgba(40, 40, 40, 0.7);
     /* Borders / dividers */
-    --surface-300: #A8BDD8;
+    --surface-300: rgba(255, 255, 255, 0.1);
     /* Hover / emphasis borders */
 
     /* --- TEXT --- */
-    --base-white: #0C1A3A;
-    /* Primary text (dark navy) */
-    --text-muted: #4A6080;
+    --base-white: #ffffff;
+    /* Primary text */
+    --text-muted: #888888;
     /* Muted labels */
-    --text-description: #2D4060;
+    --text-description: #a1a1aa;
     /* Body / description text */
 
-    /* --- PRIMARY ACTION (Sky Blue) --- */
-    --primary-500: #0096D6;
+    /* --- PRIMARY ACTION (Monochrome / White) --- */
+    --primary-500: #ffffff;
     /* Main action */
-    --primary-600: #38B6FF;
-    /* Hover - lighter sky blue */
-    --primary-700: #0078AC;
+    --primary-600: #e4e4e7;
+    /* Hover */
+    --primary-700: #a1a1aa;
     /* Active / pressed */
-    --primary-50: rgba(0, 150, 214, 0.12);
+    --primary-50: rgba(255, 255, 255, 0.1);
     /* Focus halo */
-    --primary-200: rgba(0, 150, 214, 0.25);
+    --primary-200: rgba(255, 255, 255, 0.2);
 
     /* --- SUCCESS & MATCHING --- */
-    --secondary-500: #2BB36A;
+    --secondary-500: #10b981;
     /* Success green */
-    --match-perfect: #2BB36A;
-    --match-near: #38B6FF;
-    --match-low: #7A9BBF;
+    --match-perfect: #10b981;
+    --match-near: #38bdf8;
+    --match-low: #64748b;
 
     /* --- SEMANTIC STATES --- */
-    --success-bg: #E6F7EE;
-    --success-text: #1A7A45;
-    --success-50: rgba(43, 179, 106, 0.12);
-    --success-200: rgba(43, 179, 106, 0.25);
-    --success-700: #1A7A45;
+    --success-bg: rgba(16, 185, 129, 0.1);
+    --success-text: #34d399;
+    --success-50: rgba(16, 185, 129, 0.05);
+    --success-200: rgba(16, 185, 129, 0.15);
+    --success-700: #10b981;
 
-    --warning-bg: #FFF8E6;
-    --warning-text: #A05A00;
+    --warning-bg: rgba(245, 158, 11, 0.1);
+    --warning-text: #fbbf24;
 
-    --error-bg: #FEE8E8;
-    --error-text: #C0393B;
-    --error-50: rgba(192, 57, 59, 0.12);
-    --error-200: rgba(192, 57, 59, 0.25);
-    --error-700: #C0393B;
+    --error-bg: rgba(239, 68, 68, 0.1);
+    --error-text: #f87171;
+    --error-50: rgba(239, 68, 68, 0.05);
+    --error-200: rgba(239, 68, 68, 0.15);
+    --error-700: #ef4444;
 
-    --info-bg: #E6F3FB;
-    --info-text: #0C6AA6;
+    --info-bg: rgba(56, 189, 248, 0.1);
+    --info-text: #7dd3fc;
 
     /* --- TYPOGRAPHY --- */
-    --font-headings: 'Montserrat', sans-serif;
-    --font-body: 'Roboto', sans-serif;
+    --font-headings: 'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'SF Pro Text', 'Inter', system-ui, -apple-system, sans-serif;
 
     --text-h1: 3.0rem;
     --text-h2: 2.25rem;
     --text-h3: 1.5rem;
     --text-h4: 1.25rem;
     --text-lg: 1.125rem;
-    --text-base: 1.0rem;
+    --text-base: 0.95rem;
     --text-sm: 0.875rem;
     --text-xs: 0.75rem;
 
-    --leading-tight: 1.1;
-    --leading-normal: 1.5;
+    --leading-tight: 1.15;
+    --leading-normal: 1.6;
 
     /* --- SPACING & LAYOUT --- */
     --space-4: 0.25rem;
@@ -93,76 +93,15 @@
     --space-48: 3.0rem;
 
     /* --- SHADOWS & RADIUS --- */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 16px;
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
     --radius-full: 999px;
 
-    --shadow-sm: 0 1px 3px rgba(12, 26, 58, 0.10);
-    --shadow-md: 0 4px 12px rgba(12, 26, 58, 0.12);
-    --shadow-lg: 0 10px 24px rgba(12, 26, 58, 0.15);
-    --shadow-focus: 0 0 0 4px var(--primary-50);
-}
-
-/* ============================================================
-   DARK MODE
-   Palette: Dark grey backgrounds | Dark Navy tint | Light Blue accents
-   Activated by adding class="dark" to <html>
-   ============================================================ */
-html.dark {
-    --base-black: #14172B;
-    /* Deepest page background (dark grey/navy) */
-    --surface-50: #1C2038;
-    /* Section backgrounds */
-    --surface-100: #242845;
-    /* Card backgrounds */
-    --surface-200: #2E3350;
-    /* Borders / dividers */
-    --surface-300: #3A4060;
-    /* Hover borders */
-
-    --base-white: #C8DAEF;
-    /* Primary text (light blue-grey) */
-    --text-muted: #7A9BBF;
-    /* Muted labels */
-    --text-description: #A0BCE0;
-    /* Body text */
-
-    --primary-500: #38B6FF;
-    /* Sky blue - primary action */
-    --primary-600: #6CCBFF;
-    /* Hover - lighter */
-    --primary-700: #0096D6;
-    /* Active */
-    --primary-50: rgba(56, 182, 255, 0.15);
-    --primary-200: rgba(56, 182, 255, 0.28);
-
-    --secondary-500: #3DD68C;
-    --match-perfect: #3DD68C;
-    --match-near: #6CCBFF;
-    --match-low: #6B82A0;
-
-    --success-bg: #0D2B1E;
-    --success-text: #3DD68C;
-    --success-50: rgba(61, 214, 140, 0.12);
-    --success-200: rgba(61, 214, 140, 0.25);
-    --success-700: #3DD68C;
-
-    --warning-bg: #2B2200;
-    --warning-text: #FFCC66;
-
-    --error-bg: #2B0D0D;
-    --error-text: #FF7878;
-    --error-50: rgba(255, 120, 120, 0.12);
-    --error-200: rgba(255, 120, 120, 0.25);
-    --error-700: #FF7878;
-
-    --info-bg: #0D1E30;
-    --info-text: #6CCBFF;
-
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.7);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.9);
+    --shadow-focus: 0 0 0 2px rgba(255, 255, 255, 0.4);
 }
 
 /* --- GLOBAL RESET --- */
@@ -1340,3 +1279,106 @@ input[type="number"]::-webkit-outer-spin-button {
         border-width: 3px;
     }
 }
+/* ============================================================
+   SSSCRIPT.APP VISIONOS AESTHETIC OVERRIDES
+   Injecting deep modern glassmorphism into all components
+   ============================================================ */
+
+/* Force dark mode background globally */
+html, body {
+    background-color: var(--surface-50);
+    color: var(--base-white);
+    background-image: radial-gradient(circle at 50% 0%, rgba(25, 25, 35, 1) 0%, #000 100%);
+    background-attachment: fixed;
+}
+
+/* Glassmorphism Cards and Containers */
+.dashboard-card, 
+.card, 
+.panel, 
+.modal-content, 
+.sidebar, 
+nav, 
+header, 
+.group-card, 
+.login-card,
+#mobile-bottom-nav {
+    background: rgba(25, 25, 25, 0.45) !important;
+    backdrop-filter: blur(24px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.02) !important;
+    border-radius: var(--radius-lg);
+}
+
+/* Modernize Inputs */
+.input, .textarea, .select {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--base-white) !important;
+    backdrop-filter: blur(12px) !important;
+    border-radius: var(--radius-md) !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.input:focus, .textarea:focus, .select:focus {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Buttons like macOS / VisionOS */
+.btn-primary {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #000 !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15), inset 0 -1px 1px rgba(0, 0, 0, 0.2) !important;
+    font-weight: 600 !important;
+    border-radius: var(--radius-md) !important;
+}
+
+.btn-primary:hover {
+    background: #ffffff !important;
+    transform: scale(1.02) !important;
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2) !important;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--base-white) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Make headers crisp white */
+h1, h2, h3, h4, .brand, .logo-text, .login-logo {
+    color: #ffffff !important;
+    text-shadow: 0 2px 10px rgba(255,255,255,0.1);
+}
+
+text-muted, p, label {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Traffic light window controls for sidebars and cards if needed */
+.window-controls {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+}
+.window-controls span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.window-controls .close { background: #ff5f56; }
+.window-controls .minimize { background: #ffbd2e; }
+.window-controls .maximize { background: #27c93f; }
+
