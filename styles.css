@@ -95,22 +95,42 @@
     --btn-primary-hover: #333333;
     --btn-secondary-bg: rgba(0, 0, 0, 0.05);
     --btn-secondary-hover: rgba(0, 0, 0, 0.1);
+
+    /* Theme Toggle Images */
+    --bg-logo-url: url('bg_logo_black.png');
 }
 
 html.dark {
-    /* --- BACKGROUNDS - ssscript.app Minimalist Dark Style --- */
-    --base-black: #000000;
-    /* Page background  */
-    --surface-50: #0a0a0a;
-    /* Section backgrounds (translucent for glass effect) */
-    --surface-100: rgba(25, 25, 25, 0.6);
-    /* Card backgrounds */
-    --surface-200: rgba(40, 40, 40, 0.7);
-    /* Borders / dividers */
-    --surface-300: rgba(255, 255, 255, 0.1);
-    /* Hover / emphasis borders */
+    --primary-50: rgba(255, 255, 255, 0.05); /* Deep dark input background */
+    --primary-100: #2a2a2a;
+    --primary-200: #404040;
+    --primary-500: #ffffff;
+    --primary-600: #e0e0e0;
+    --primary-700: #a0a0a0;
 
-    /* --- TEXT --- */
+    --surface-50: #0a0a0a;  /* the main background color */
+    --surface-100: rgba(25, 25, 25, 0.6); /* Translucent panel */
+    --surface-200: rgba(45, 45, 45, 0.5); /* Component background */
+    --surface-300: rgba(70, 70, 70, 0.5); /* Borders and subtle fills */
+
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.85);
+    --text-muted: rgba(255, 255, 255, 0.6);
+    --text-description: rgba(255, 255, 255, 0.45);
+
+    --border-subtle: rgba(255, 255, 255, 0.1);
+
+    --bg-gradient: linear-gradient(135deg, #050505 0%, #111111 100%);
+    --card-bg: rgba(25, 25, 25, 0.5); /* Glass feel */
+    --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+    --input-bg: rgba(0, 0, 0, 0.5);
+    --nav-blur: blur(24px);
+
+    /* Theme Toggle Images */
+    --bg-logo-url: url('bg_logo_white.png');
+
+    /* --- BACKGROUNDS - ssscript.app Minimalist Dark Style --- */
+    --base-black: #050505;
     --base-white: #ffffff;
     /* Primary text */
     --text-muted: #888888;
@@ -1490,3 +1510,21 @@ h1, h2, h3, h4, .brand, .logo-text, .login-logo {
 .window-controls .minimize { background: #ffbd2e; }
 .window-controls .maximize { background: #27c93f; }
 
+body.page-bg-logo {
+    background-image: var(--bg-logo-url);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: min(80vw, 800px); /* Responsive sizing */
+    background-attachment: fixed;
+    background-color: var(--surface-50);
+}
+
+body.page-bg-logo::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background: var(--bg-gradient);
+    opacity: 0.95; /* Fades the logo heavily so it acts as a subtle watermark */
+}
